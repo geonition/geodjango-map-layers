@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <meta name="description" content="">
+  <style type="text/css">
+      html, body, #Map {
+          width: 100%;
+          height: 100%;
+          margin: 0;
+      }
+  </style>    
+ 
+ 
+<script src="http://openlayers.org/api/OpenLayers.js"></script>
+<script>
+function init() {
+
+var map;
+var layer;
+  
+    var mapOptions = {
+        controls: [
+        new OpenLayers.Control.LayerSwitcher(),
+        new OpenLayers.Control.PanZoom(),
+        ],
+    };
+    map = new OpenLayers.Map('Map', mapOptions);
+    console.log("hello ");
+{% for p in base_layer %}
+    {% if p.protocol = 'ARCGIS' %}
+    layer = new OpenLayers.Layer.ArcGIS93Rest(
+        "{{ p.layer_name }}",
+        "{{ p.source }}",
+        {layers: "show:{{ p.layer }}"},
+        {isBaseLayer: true}
+    );   
+    map.addLayer(layer);
+    {% else %}
+    {% if p.protocol = 'OSM' %}
+            
+    layer = new OpenLayers.Layer.OSM(
+        "{{ p.layer_name}}"
+        
+    );
+    map.addLayer(layer);    
+    {% else %}
+    {% if p.protocol = 'OL' %}
+    layer = new OpenLayers.Layer.WMS(
+    "OpenLayers WMS",
+    "http://vmap0.tiles.osgeo.org/wms/vmap0",
+    {layers: "basic"}
+    );
+    map.addLayer(layer);    
+    {% endif %}
+    {% endif %}   
+    {% endif %}
+{% endfor %} 
+
+
+{% for p in overlay %}
+    {% if p.protocol = 'WFS' %}
+    layer = new OpenLayers.Layer.Vector("{{ p.layer_name }}", {
+                    strategies: [new OpenLayers.Strategy.BBOX()],
+                    protocol: new OpenLayers.Protocol.WFS({
+                        url:  " {{ p.source }} ",
+                        version: "1.1.0",
+                        featureType: "{{ p.layer }}",
+                        geometryName: "the_geom"
+                    }),
+                    visibility: false,
+                    onFeatureInsert: function(event) {
+                      count_order(event);
+                    }
+                });
+    map.addLayer(layer);
+    {% else %}
+    {% if p.protocol = 'WMS' %}
+            
+    layer = new OpenLayers.Layer.OSM(
+        "{{ p.layer_name}}"
+        
+    );
+    map.addLayer(layer);    
+    {% endif %}   
+    {% endif %}
+{% endfor %} 
+}
+</script>
+</head>
+
+<body onload = "init();">
+<div id="Map">
+  </div>
+ 
+</body>
+</html>
