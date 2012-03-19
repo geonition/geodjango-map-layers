@@ -33,8 +33,9 @@ class Map(models.Model):
     name = models.CharField(max_length = 50)
     projection = models.CharField(max_length = 15)
     resolution = models.IntegerField()
-    max_extent = models.CharField(max_length = 500)
-    layers = models.ManyToManyField(Layer)     
+    map_extent = geomodels.PolygonField(blank = 'True')
+    layers = models.ManyToManyField(Layer) 
+        
     def __unicode__(self):
         return self.name
         
