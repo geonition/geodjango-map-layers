@@ -21,6 +21,7 @@ class LayerDetail(models.Model):
     )
         
     PROTOCOLS = (
+        ('ARCACHE','ArcGISCache'),
         ('ARCGIS','ArcGIS93Rest'),
         ('WFS','WFS - Web Feature Service'),
         ('WMS','WMS - Web Map Service'),
