@@ -3,17 +3,7 @@ from django.contrib.gis.db import models as geomodels
 from django.contrib.sites.managers import CurrentSiteManager
 from django.contrib.sites.models import Site
 
-class TestProject(models.Model):
-  
-    name = models.CharField(max_length = 50)
-    area = geomodels.PolygonField()
-    site = models.ForeignKey(Site)
-    on_site = CurrentSiteManager()
-    
-    def __unicode__(self):
-        return self.name
-
-class LayerDetail(models.Model):
+class Layer(models.Model):
 
     LAYER_TYPES = (
         ('BL','Base Layer'),
@@ -28,9 +18,23 @@ class LayerDetail(models.Model):
         ('OP','OpenLayers Default'),
         ('OSM','Open Street Maps'),
     ) 
-    layer_name = models.CharField(max_length = 20)
-    layer_type = models.CharField(max_length = 5, choices = LAYER_TYPES)
+    name = models.CharField(max_length = 20)
+    type = models.CharField(max_length = 5, choices = LAYER_TYPES)
     protocol = models.CharField(max_length = 10, choices = PROTOCOLS)
     source = models.URLField()
-    layer = models.CharField(max_length = 300)
-    test_project = models.ForeignKey(TestProject)
+    layers = models.CharField(max_length = 300)
+    
+    def __unicode__(self):
+        return self.layer_name
+        
+
+class Map(models.Model):
+  
+    name = models.CharField(max_length = 50)
+    projection = models.CharField(max_length = 15)
+    resolution = models.IntegerField()
+    max_extent = models.CharField(max_length = 500)
+    layers = models.ManyToManyField(Layer)     
+    def __unicode__(self):
+        return self.name
+        

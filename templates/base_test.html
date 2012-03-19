@@ -16,130 +16,11 @@
 <script src="http://openlayers.org/api/OpenLayers.js"></script>
 <script>
 
-var map,
-    layer,
-    mapOptions,
-    layerInfo = {
-                  "currentVersion" : 10.01, 
-                  "serviceDescription" : "Testing Cache for softGIS", 
-                  "mapName" : "Layers", 
-                  "description" : "Testing cache", 
-                  "copyrightText" : "Base Test", 
-                  "layers" : [
-                    {
-                      "id" : 0, 
-                      "name" : "Suomi", 
-                      "parentLayerId" : -1, 
-                      "defaultVisibility" : true, 
-                      "subLayerIds" : null, 
-                      "minScale" : 0, 
-                      "maxScale" : 0
-                    }
-                  ], 
-                  "tables" : [
-                    
-                  ], 
-                  "spatialReference" : {
-                    "wkid" : 3067
-                  }, 
-                  "singleFusedMapCache" : false, 
-                  "tileInfo" : {
-                    "rows" : 256, 
-                    "cols" : 256, 
-                    "dpi" : 96, 
-                    "format" : "JPEG", 
-                    "compressionQuality" : 90, 
-                    "origin" : {
-                      "x" : 199949.504, 
-                      "y" : 6977073.508
-                    }, 
-                    "spatialReference" : {
-                      "wkid" : 3067
-                    }, 
-                    "lods" : [
-                      {"level" : 0, "resolution" : 150000, "scale" : 600000000}, 
-                      {"level" : 1, "resolution" : 75000, "scale" : 300000000}, 
-                      {"level" : 2, "resolution" : 37500, "scale" : 150000000}, 
-                      {"level" : 3, "resolution" : 18750, "scale" : 75000000}, 
-                      {"level" : 4, "resolution" : 9875, "scale" : 37500000}, 
-                      {"level" : 5, "resolution" : 4937.5, "scale" : 18750000}, 
-                      {"level" : 6, "resolution" : 2468.75, "scale" : 900000}, 
-                      {"level" : 7, "resolution" : 1234.375, "scale" : 450000}, 
-                      {"level" : 8, "resolution" : 617.1875, "scale" : 225000}, 
-                      {"level" : 9, "resolution" : 308.59375, "scale" : 112500}, 
-                      {"level" : 10, "resolution" : 154.29688, "scale" : 56250}, 
-                    ]
-                  }, 
-                  "initialExtent" : {
-                    "xmin" : 199949.504, 
-                    "ymin" : 6977073.508, 
-                    "xmax" : 259925.896, 
-                    "ymax" : 7037049.802, 
-                    "spatialReference" : {
-                      "wkid" : 3067
-                    }
-                  }, 
-                  "fullExtent" : {
-                    "xmin" : 199949.504, 
-                    "ymin" : 6977073.508, 
-                    "xmax" : 259925.896, 
-                    "ymax" : 7037049.802, 
-                    "spatialReference" : {
-                      "wkid" : 3067
-                    }
-                  }, 
-                  "units" : "esriMeters", 
-                  "supportedImageFormatTypes" : "PNG24,PNG,JPG,DIB,TIFF,EMF,PS,PDF,GIF,SVG,SVGZ,AI,BMP", 
-                  "documentInfo" : {
-                    "Title" : "Suomi_Grey", 
-                    "Author" : "ESRI", 
-                    "Comments" : "", 
-                    "Subject" : "streets, highways, major roads, railways, water features, administrative boundaries, cities, parks, protected areas, landmarks ", 
-                    "Category" : "", 
-                    "Keywords" : "World, Global, 2009, Japan, UNEP-WCMC", 
-                    "Credits" : ""
-                  }, 
-                  "capabilities" : "Map"
-                };
-            
 function init() {
 
     console.log("hello ");
-    {% for p in base_layer %}
-        {%if p.protocol = 'ARCACHE' %}
-            var maxExtent = new OpenLayers.Bounds(200000,7000000,260000,7100000)
-            var layerMaxExtent = new OpenLayers.Bounds(
-                layerInfo.fullExtent.xmin, 
-                layerInfo.fullExtent.ymin, 
-                layerInfo.fullExtent.xmax, 
-                layerInfo.fullExtent.ymax  
-            );
-            var resolutions = [];
-            for (var i=0; i<layerInfo.tileInfo.lods.length; i++) {
-                resolutions.push(layerInfo.tileInfo.lods[i].resolution);
-            }
-            
-            mapOptions = {
-            
-            maxExtent: maxExtent,
-            StartBounds: layerMaxExtent,
-            units: (layerInfo.units == "esriFeet") ? 'ft' : 'm',
-            resolutions: resolutions,
-            tileSize: new OpenLayers.Size(layerInfo.tileInfo.width, layerInfo.tileInfo.height),
-            projection: 'EPSG:' + + layerInfo.spatialReference.wkid 
-        };
-        
-        cacheLayer = new OpenLayers.Layer.ArcGISCache( "AGSCache",
-                    "http://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer", {
-                        isBaseLayer: true,
-
-                        //From layerInfo above                        
-                        resolutions: resolutions,                        
-                        tileSize: new OpenLayers.Size(layerInfo.tileInfo.cols, layerInfo.tileInfo.rows),                        
-                        tileOrigin: new OpenLayers.LonLat(layerInfo.tileInfo.origin.x , layerInfo.tileInfo.origin.y),                        
-                        maxExtent: layerMaxExtent,                        
-                        projection: 'EPSG:' + layerInfo.spatialReference.wkid
-                    });
+    var layers = [];
+    
         
         {% if p.protocol = 'ARCGIS' %}
             layer = new OpenLayers.Layer.ArcGIS93Rest(
@@ -215,8 +96,8 @@ function init() {
             map.addLayer(layer);    
         {% endif %}   
         {% endif %}
-    {% endfor %} 
-
+    {% endfor %}
+    map.addLayers(layers);
     map.addControl(new OpenLayers.Control.LayerSwitcher());
 }
 </script>
