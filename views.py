@@ -10,10 +10,19 @@ def base_test(request, map_slug_name = ''):
 	print map_slug_name
 	map_data = Map.objects.get(slug_name = map_slug_name)
 	layer_data = map_data.layers.all()
-	return render_to_response('base_test.html',
+	return render_to_response('map.html',
                               {'map_data': map_data,
                                'layer_data': layer_data },
                               context_instance = RequestContext(request)) 
 
+def base_js(request, map_slug_name = ''):
+	print map_slug_name
+	map_data = Map.objects.get(slug_name = map_slug_name)
+	layer_data = map_data.layers.all()
+	return render_to_response('map.js',
+                              {'map_data': map_data,
+                               'layer_data': layer_data },
+                               mimetype = "application/javascript",
+                              context_instance = RequestContext(request)) 
 
     
