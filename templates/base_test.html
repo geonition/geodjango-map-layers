@@ -1,111 +1,101 @@
 <!doctype html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title></title>
-  <meta name="description" content="">
-  <style type="text/css">
-      html, body, #Map {
-          width: 100%;
-          height: 100%;
-          margin: 0;
-      }
-  </style>    
- 
- 
-<script src="http://openlayers.org/api/OpenLayers.js"></script>
-<script>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="description" content="">
+    <style type="text/css">
+        html, body, #Map {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            }
+    </style>    
+    <script src="http://openlayers.org/api/OpenLayers.js"></script>
+    <script>
+        function init() {
+            var map ; 
+            var layer ; 
+            var layers = [];
+            {% for p in layer_data %}
+                {% if p.protocol = 'ARCGIS' %}
+                    layer = new OpenLayers.Layer.ArcGIS93Rest(
+                            "{{ p.name }}",
+                            "{{ p.source }}",
+                            {layers: "show:{{ p.layers }}",
+                            format: "png24",
+                            transparent: true},
+                            {% if p.layer_type = 'BL'%}
+                            {isBaseLayer: true}
+                            {% else %}
+                            {isBaseLayer: false}
+                            {% endif %}
+                        );
+                    layers.push(layer)     
+                {% else %}
+                {% if p.protocol = 'OSM' %}            
+                    layer = new OpenLayers.Layer.OSM(
+                            '{{ p.name }}'
+                        );
+                    layers.push(layer)        
+                {% else %}
+                {% if p.protocol = 'WMS' %}
+                    layer = new OpenLayers.Layer.WMS(
+                            "{{ p.layer_name }}",
+                            "{{ p.source }}",
+                            {layers: "{{ p.layer }}"},
+                            {% if p.layer_type = 'BL'%}
+                            {isBaseLayer: true}
+                            {% else %}
+                            {isBaseLayer: false}
+                            {% endif %}
+                        );
+                    layers.push(layer)    
+                {% else %}
+                {% if p.protocol = 'WFS' %}
+                    layer = new OpenLayers.Layer.Vector("{{ p.name }}", {
+                            strategies: [new OpenLayers.Strategy.BBOX()],
+                            protocol: new OpenLayers.Protocol.WFS({
+                                url:  "{{ p.source }}",
+                                version: "1.1.0",
+                                featureType: "{{ p.layer }}",
+                                featureNS: "http://localhost:8080/geoserver/BaseTest",
+                                geometryName: "the_geom"
+                            }),
+                            visibility: false,
+                            onFeatureInsert: function(event) {
+                                count_order(event);
+                            },
+                            {% if p.layer_type = 'BL'%}
+                            {isBaseLayer: true}
+                            {% else %}
+                            {isBaseLayer: false}
+                            {% endif %}
+                        });
+                    layers.push(layer)                
+                {% endif %}       
+                {% endif %}
+                {% endif %}   
+                {% endif %}            
+            {% endfor %}    
+            var mapOptions = {
+                projection:"EPSG:{{ map_data.projection }}",
+                maxExtent: new OpenLayers.Bounds(89949.504,
+                                         6502687.508,
+                                         502203.000,
+                                         7137049.802),
+                maxResolution: 50,
+                numZoomLevels: 10,
+                tileSize: new OpenLayers.Size(256, 256)                           
+                };
+            map = new OpenLayers.Map("Map",mapOptions);     
+            map.addLayers(layers);
+            map.addControl(new OpenLayers.Control.LayerSwitcher({ascending: true}));
+        };
 
-function init() {
-
-    console.log("hello ");
-    var layers = [];
-    
-        
-        {% if p.protocol = 'ARCGIS' %}
-            layer = new OpenLayers.Layer.ArcGIS93Rest(
-                    "{{ p.layer_name }}",
-                    "{{ p.source }}",
-                    {layers: "show:{{ p.layer }}"},
-                    {isBaseLayer: true}
-                );
-            mapOptions = {
-            maxResolution: 50,
-            projection: "EPSG:3067",
-            maxExtent: new OpenLayers.Bounds(89949.504,
-                                                6502687.508,
-                                                502203.000,
-                                                7137049.802),
-            numZoomLevels: 19,
-            tileSize: new OpenLayers.Size(256, 256) 
-        };  
-        {% else %}
-        {% if p.protocol = 'OSM' %}            
-            layer = new OpenLayers.Layer.OSM(
-                    "{{ p.layer_name}}"        
-                );    
-        {% else %}
-        {% if p.protocol = 'OL' %}
-            layer = new OpenLayers.Layer.WMS(
-                    "OpenLayers WMS",
-                    "http://vmap0.tiles.osgeo.org/wms/vmap0",
-                    {layers: "basic"}
-                );
-        {% else %}
-        {% if p.protocol = 'WMS' %}
-            layer = new OpenLayers.Layer.WMS(
-                    "{{ p.layer_name }}",
-                    "{{ p.source }}",
-                    {layers: "{{ p.layer }}"}
-                );
-            
-        {% endif %}       
-        {% endif %}
-        {% endif %}   
-        {% endif %}
-        
-        map = new OpenLayers.Map(
-            'Map',
-            mapoptions
-        );
-        map.addLayer(layer);
-    {% endfor %} 
-
-    {% for p in overlay %}
-        {% if p.protocol = 'WFS' %}
-            layer = new OpenLayers.Layer.Vector("{{ p.layer_name }}", {
-                    strategies: [new OpenLayers.Strategy.BBOX()],
-                    protocol: new OpenLayers.Protocol.WFS({
-                        url:  "{{ p.source }}",
-                        version: "1.1.0",
-                        featureType: "{{ p.layer }}",
-                        featureNS: "http://localhost:8080/geoserver/BaseTest",
-                        geometryName: "the_geom"
-                    }),
-                    visibility: false,
-                    onFeatureInsert: function(event) {
-                      count_order(event);
-                    }
-                });
-            map.addLayer(layer);
-        {% else %}
-        {% if p.protocol = 'WMS' %}            
-            layer = new OpenLayers.Layer.OSM(
-                    "{{ p.layer_name}}"
-                );
-            map.addLayer(layer);    
-        {% endif %}   
-        {% endif %}
-    {% endfor %}
-    map.addLayers(layers);
-    map.addControl(new OpenLayers.Control.LayerSwitcher());
-}
 </script>
 </head>
-
 <body onload = "init();">
-<div id="Map">
-  </div>
- 
+<div id = "Map"></div>     
 </body>
 </html>
