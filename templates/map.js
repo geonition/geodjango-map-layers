@@ -1,6 +1,28 @@
-function init() {
-    var map, layer, layers=[];
+var map, layer, layers=[], mapOptions;
+
+function init_map(map_div) {
     {% for p in layer_data %}
+        {% if p.protocol = 'ARCcache' %}
+            layer = new OpenLayers.Layer.ArcGISCache(
+                "{{ p.name }}",
+                "{{ p.source }}",
+                { layerInfo: {{ p.layer_info|safe }} },
+                {% if p.layer_type = 'BL'%}
+                    {isBaseLayer: true}
+                {% else %}
+                    {isBaseLayer: false}
+                {% endif %}
+                );
+            layers.push(layer);
+            mapOptions = {
+                maxExtent: layer.fullExtent,
+                units: layer.units,
+                resolutions: layer.resolutions,
+                numZoomLevels: layer.numZoomLevels,
+                tileSize: layer.tileSize,
+                displayProjection: layer.displayProjection
+                };
+        {% else %}
         {% if p.protocol = 'ARCGIS' %}
             layer = new OpenLayers.Layer.ArcGIS93Rest(
                 "{{ p.name }}",
@@ -60,19 +82,24 @@ function init() {
         {% endif %}       
         {% endif %}
         {% endif %}   
+        {% endif %}
         {% endif %}            
-    {% endfor %}    
-    var mapOptions = {
-        projection:"EPSG:{{ map_data.projection }}",
-        maxExtent: new OpenLayers.Bounds(89949.504,
-                                         6502687.508,
-                                         502203.000,
-                                         7137049.802),
-        maxResolution: 50,
-        numZoomLevels: 10,
-        tileSize: new OpenLayers.Size(256, 256)                           
-        };
-    map = new OpenLayers.Map("Map",mapOptions);     
+        {% if p.protocol != "ARCcache"%}
+            mapOptions = {
+                projection:"EPSG:{{ map_data.projection }}",
+                maxExtent: new OpenLayers.Bounds(89949.504,
+                                                6502687.508,
+                                                502203.000,
+                                                7137049.802),
+                maxResolution: 50,
+                numZoomLevels: 10,
+                tileSize: new OpenLayers.Size(256, 256)                           
+                };
+            
+        {% endif %}
+    {% endfor %}
+    map = new OpenLayers.Map(map_div, mapOptions);     
     map.addLayers(layers);
-    map.addControl(new OpenLayers.Control.LayerSwitcher({ascending: true}));
+        
+    return map;
 };
