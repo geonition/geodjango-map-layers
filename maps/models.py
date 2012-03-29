@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 from django.contrib.sites.managers import CurrentSiteManager
 from django.contrib.sites.models import Site
 from django.template.defaultfilters import slugify
@@ -31,12 +32,16 @@ class Layer(models.Model):
 class Map(models.Model):
     slug_name = models.SlugField(max_length = 50, primary_key = True, editable = False)
     name = models.CharField(max_length = 50)
-    projection = models.CharField(max_length = 15, default = '3067')
-    max_resolution = models.IntegerField(default = 50)
+    projection = models.CharField(max_length = 15,
+                                  default = getattr(settings, 'SPATIAL_REFERENCE_SYSTEM_ID', 4326))
+    max_resolution = models.IntegerField(default = 50,
+                                         blank = True)
     max_extent = models.CharField(max_length = 750,
                                   blank = True)
-    zoom_level = models.IntegerField(default = 10)
-    tile_size = models.CharField(max_length = 15, default = '256,256')
+    zoom_level = models.IntegerField(default = 10,
+                                     blank = True)
+    tile_size = models.CharField(max_length = 15,
+                                 default = '256,256')
     layers = models.ManyToManyField(Layer)
     
     def save(self, *args, **kwargs):
