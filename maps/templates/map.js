@@ -100,6 +100,9 @@ function init_map(map_div) {
     {% endfor %}
     map = new OpenLayers.Map(map_div, mapOptions);     
     map.addLayers(layers);
+    
+    map.setCenter();
+    map.zoomToScale(492159825);
         
     return map;
-};
+}
