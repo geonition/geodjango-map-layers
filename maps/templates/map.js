@@ -1,6 +1,17 @@
 var map, layer, layers=[], mapOptions;
 
-function init_map(map_div) {
+/*
+This function craetes the map and layers.
+
+Additional parameters and layers can be given to the
+function.
+
+map_div -- id of the element to create the map into
+callback_function -- callback function the to be called after creation
+    The callback_function will get the map as a parameter
+*/
+function create_map(map_div, callback_function) {
+    
     {% for p in layer_data %}
         {% if p.protocol = 'ARCcache' %}
             layer = new OpenLayers.Layer.ArcGISCache(
@@ -101,8 +112,7 @@ function init_map(map_div) {
     map = new OpenLayers.Map(map_div, mapOptions);     
     map.addLayers(layers);
     
-    map.setCenter();
-    map.zoomToScale(492159825);
-        
-    return map;
+    if(callback_function !== undefined) {
+        callback_function(map);
+    }
 }

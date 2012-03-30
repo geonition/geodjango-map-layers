@@ -5,7 +5,7 @@ urlpatterns = patterns('maps.views',
     url(r'^map/(?P<map_slug_name>[\w+(+-_)*]+)/$',
         'map_test',
         name="map_test"),
-    url(r'^javascript/(?P<map_slug_name>[\w+(+-_)*]+)/$',
+    url(r'^javascript/(?P<map_slug_name>[\w+(+-_)*]+).js$',
         'map_js',
         name="map_js"),    
         
