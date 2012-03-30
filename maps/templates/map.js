@@ -20,7 +20,7 @@ function create_map(map_div, callback_function) {
                 { layerInfo: {{ p.layer_info|safe }} },
                 {% if p.layer_type = 'BL'%}
                     {isBaseLayer: true,
-                    overrideDPI: true}
+                    useScales: true}
                 {% else %}
                     {isBaseLayer: false}
                 {% endif %}
@@ -34,12 +34,9 @@ function create_map(map_div, callback_function) {
                 tileSize: layer.tileSize,
                 displayProjection: layer.displayProjection,
                 projection: layer.projection,
-                maxResolution: 135.466937600542,
-                maxScale: 750.001905003809,
-                minResolution: 0.264583862501058,
-                minScale: 384000.9753619511,
                 resolutions: layer.resolutions,
-                units: layer.units
+                units: layer.units,
+                StartBounds: layer.initialExtent   
                 };
         {% else %}
         {% if p.protocol = 'ARCGIS' %}
