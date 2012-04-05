@@ -34,7 +34,6 @@ function create_map(map_div, callback_function) {
                 tileSize: layer.tileSize,
                 displayProjection: layer.displayProjection,
                 projection: layer.projection,
-                resolutions: layer.resolutions,
                 units: layer.units,
                 StartBounds: layer.initialExtent   
                 };
