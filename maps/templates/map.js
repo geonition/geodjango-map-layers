@@ -19,24 +19,21 @@ function create_map(map_div, callback_function) {
                 "{{ p.source }}",
                 { layerInfo: {{ p.layer_info|safe }} },
                 {% if p.layer_type = 'BL'%}
-                    {isBaseLayer: true,
-                    useScales: true}
+                    {isBaseLayer: true}
                 {% else %}
                     {isBaseLayer: false}
                 {% endif %}
                 );
             layers.push(layer);
             mapOptions = {
-                maxExtent: layer.fullExtent,
+                maxExtent: layer.maxExtent,
                 units: layer.units,
                 resolutions: layer.resolutions,
-                numZoomLevels: layer.numZoomLevels,
+                numZoomLevels: 10,
                 tileSize: layer.tileSize,
-                displayProjection: layer.displayProjection,
                 projection: layer.projection,
-                resolutions: layer.resolutions,
-                units: layer.units,
-                StartBounds: layer.initialExtent   
+                units: layer.units, 
+                restrictedExtent: layer.maxExtent  
                 };
         {% else %}
         {% if p.protocol = 'ARCGIS' %}
