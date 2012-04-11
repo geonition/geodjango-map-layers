@@ -33,7 +33,7 @@ function create_map(map_div, callback_function) {
                 tileSize: layer.tileSize,
                 projection: layer.projection,
                 units: layer.units, 
-                restrictedExtent: layer.maxExtent  
+                restrictedExtent: layer.maxExtent
                 };
             map_options_created = true;
         {% else %}
