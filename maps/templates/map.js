@@ -11,7 +11,7 @@ callback_function -- callback function the to be called after creation
     The callback_function will get the map as a parameter
 */
 function create_map(map_div, callback_function) {
-    
+    var map_options_created = false;
     {% for p in layer_data %}
         {% if p.protocol = 'ARCcache' %}
             layer = new OpenLayers.Layer.ArcGISCache(
@@ -35,6 +35,7 @@ function create_map(map_div, callback_function) {
                 units: layer.units, 
                 restrictedExtent: layer.maxExtent  
                 };
+            map_options_created = true;
         {% else %}
         {% if p.protocol = 'ARCGIS' %}
             layer = new OpenLayers.Layer.ArcGIS93Rest(
@@ -97,19 +98,15 @@ function create_map(map_div, callback_function) {
         {% endif %}   
         {% endif %}
         {% endif %}            
-        {% if p.protocol != "ARCcache"%}
+        if(map_options_created == false) {
             mapOptions = {
                 projection:"EPSG:{{ map_data.projection }}",
-                maxExtent: new OpenLayers.Bounds(89949.504,
-                                                6502687.508,
-                                                502203.000,
-                                                7137049.802),
-                maxResolution: 50,
-                numZoomLevels: 10,
-                tileSize: new OpenLayers.Size(256, 256)                           
+                maxExtent: new OpenLayers.Bounds({{ map_data.max_extent }}),
+                maxResolution: {{ map_data.max_resolution }},
+                numZoomLevels: {{map_data.zoom_level }},
+                tileSize: new OpenLayers.Size({{ map_data.tile_size }})                           
                 };
-            
-        {% endif %}
+        }
     {% endfor %}
     map = new OpenLayers.Map(map_div, mapOptions);     
     map.addLayers(layers);
