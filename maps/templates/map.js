@@ -17,12 +17,7 @@ function create_map(map_div, callback_function) {
             layer = new OpenLayers.Layer.ArcGISCache(
                 "{{ p.name }}",
                 "{{ p.source }}",
-                { layerInfo: {{ p.layer_info|safe }} },
-                {% if p.layer_type = 'BL'%}
-                    {isBaseLayer: true}
-                {% else %}
-                    {isBaseLayer: false}
-                {% endif %}
+                { layerInfo: {{ p.layer_info|safe }} }
                 );
             layers.push(layer);
             mapOptions = {
@@ -32,7 +27,7 @@ function create_map(map_div, callback_function) {
                 numZoomLevels: 10,
                 tileSize: layer.tileSize,
                 projection: layer.projection,
-                units: layer.units, 
+                units: layer.units,
                 restrictedExtent: layer.maxExtent
                 };
             map_options_created = true;
@@ -50,7 +45,7 @@ function create_map(map_div, callback_function) {
                     {isBaseLayer: false}
                 {% endif %}
                 );
-            layers.push(layer)     
+            layers.push(layer)
         {% else %}
         {% if p.protocol = 'OSM' %}
             layer = new OpenLayers.Layer.OSM(
@@ -69,7 +64,7 @@ function create_map(map_div, callback_function) {
                 {isBaseLayer: false}
                 {% endif %}
                 );
-            layers.push(layer)    
+            layers.push(layer)
         {% else %}
         {% if p.protocol = 'WFS' %}
             layer = new OpenLayers.Layer.Vector(
@@ -92,25 +87,25 @@ function create_map(map_div, callback_function) {
                     {isBaseLayer: false}
                     {% endif %}
                 });
-            layers.push(layer)                
-        {% endif %}       
+            layers.push(layer)
         {% endif %}
-        {% endif %}   
         {% endif %}
-        {% endif %}            
+        {% endif %}
+        {% endif %}
+        {% endif %}
         if(map_options_created == false) {
             mapOptions = {
                 projection:"EPSG:{{ map_data.projection }}",
                 maxExtent: new OpenLayers.Bounds({{ map_data.max_extent }}),
                 maxResolution: {{ map_data.max_resolution }},
                 numZoomLevels: {{map_data.zoom_level }},
-                tileSize: new OpenLayers.Size({{ map_data.tile_size }})                           
+                tileSize: new OpenLayers.Size({{ map_data.tile_size }})
                 };
         }
     {% endfor %}
-    map = new OpenLayers.Map(map_div, mapOptions);     
+    map = new OpenLayers.Map(map_div, mapOptions);
     map.addLayers(layers);
-    
+
     if(callback_function !== undefined) {
         callback_function(map);
     }
