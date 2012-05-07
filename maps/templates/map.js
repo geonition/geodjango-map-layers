@@ -1,10 +1,3 @@
-/*
-Namespace creation
-*/
-if(gnt === undefined) {
-    gnt = {};
-}
-gnt.maps = {};
 
 var map, layer, layers=[], mapOptions;
 
