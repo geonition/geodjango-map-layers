@@ -11,13 +11,16 @@ callback_function -- callback function the to be called after creation
     The callback_function will get the map as a parameter
 */
 function create_map(map_div, callback_function) {
+    console.log("create map");
     var map_options_created = false;
     {% for p in layer_data %}
         {% if p.protocol = 'ARCcache' %}
+            var layer_info = {{ p.layer_info|safe }};
+            };
             layer = new OpenLayers.Layer.ArcGISCache(
                 "{{ p.name }}",
                 "{{ p.source }}",
-                { layerInfo: {{ p.layer_info|safe }} }
+                { layerInfo: layer_info}
                 );
             layers.push(layer);
             mapOptions = {
@@ -29,7 +32,7 @@ function create_map(map_div, callback_function) {
                 projection: layer.projection,
                 units: layer.units,
                 restrictedExtent: layer.maxExtent
-                };
+            };
             map_options_created = true;
         {% else %}
         {% if p.protocol = 'ARCGIS' %}
@@ -100,12 +103,13 @@ function create_map(map_div, callback_function) {
                 maxResolution: {{ map_data.max_resolution }},
                 numZoomLevels: {{map_data.zoom_level }},
                 tileSize: new OpenLayers.Size({{ map_data.tile_size }})
-                };
+            };
         }
     {% endfor %}
+    
     map = new OpenLayers.Map(map_div, mapOptions);
     map.addLayers(layers);
-
+        
     if(callback_function !== undefined) {
         callback_function(map);
     }
