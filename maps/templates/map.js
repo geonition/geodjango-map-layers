@@ -27,10 +27,9 @@ function create_map(map_div, callback_function) {
                 maxExtent: layer.maxExtent,
                 units: layer.units,
                 resolutions: layer.resolutions,
-                numZoomLevels: 10,
+                numZoomLevels: layer.lods.length,
                 tileSize: layer.tileSize,
                 projection: layer.projection,
-                units: layer.units,
                 restrictedExtent: layer.maxExtent
                 };
             map_options_created = true;
@@ -85,9 +84,9 @@ function create_map(map_div, callback_function) {
                         count_order(event);
                     },
                     {% if p.layer_type = 'BL'%}
-                    {isBaseLayer: true}
+                    isBaseLayer: true
                     {% else %}
-                    {isBaseLayer: false}
+                    isBaseLayer: false
                     {% endif %}
                 });
             layers.push(layer)
@@ -109,6 +108,7 @@ function create_map(map_div, callback_function) {
     
     map = new OpenLayers.Map(map_div, mapOptions);
     map.addLayers(layers);
+    map.addControl(new OpenLayers.Control.LayerSwitcher());
     
     if(callback_function !== undefined) {
         callback_function(map);
