@@ -3,7 +3,7 @@ from setuptools import find_packages
 
 setup(
     name='maps',
-    version='1.0.x',
+    version='4.0.0',
     author='Pratik Hublikar',
     packages=find_packages(),
     include_package_data=True,

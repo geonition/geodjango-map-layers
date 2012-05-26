@@ -1,3 +1,4 @@
+
 var map, layer, layers=[], mapOptions;
 
 /*
@@ -7,10 +8,12 @@ Additional parameters and layers can be given to the
 function.
 
 map_div -- id of the element to create the map into
+initial_extent -- initial extent where the map should open
 callback_function -- callback function the to be called after creation
     The callback_function will get the map as a parameter
 */
 function create_map(map_div, callback_function) {
+
     var map_options_created = false;
     {% for p in layer_data %}
         {% if p.protocol = 'ARCcache' %}
@@ -24,10 +27,9 @@ function create_map(map_div, callback_function) {
                 maxExtent: layer.maxExtent,
                 units: layer.units,
                 resolutions: layer.resolutions,
-                numZoomLevels: 10,
+                numZoomLevels: layer.lods.length,
                 tileSize: layer.tileSize,
                 projection: layer.projection,
-                units: layer.units,
                 restrictedExtent: layer.maxExtent
                 };
             map_options_created = true;
@@ -76,15 +78,15 @@ function create_map(map_div, callback_function) {
                     featureType: "{{ p.layer }}",
                     featureNS: "http://localhost:8080/geoserver/BaseTest",
                     geometryName: "the_geom"
-                }),
+                    }),
                     visibility: false,
                     onFeatureInsert: function(event) {
                         count_order(event);
                     },
                     {% if p.layer_type = 'BL'%}
-                    {isBaseLayer: true}
+                    isBaseLayer: true
                     {% else %}
-                    {isBaseLayer: false}
+                    isBaseLayer: false
                     {% endif %}
                 });
             layers.push(layer);
@@ -98,15 +100,16 @@ function create_map(map_div, callback_function) {
                 projection:"EPSG:{{ map_data.projection }}",
                 maxExtent: new OpenLayers.Bounds({{ map_data.max_extent }}),
                 maxResolution: {{ map_data.max_resolution }},
-                numZoomLevels: {{map_data.zoom_level }},
+                numZoomLevels: {{ map_data.zoom_level }},
                 tileSize: new OpenLayers.Size({{ map_data.tile_size }})
                 };
         }
     {% endfor %}
+    
     map = new OpenLayers.Map(map_div, mapOptions);
     map.addLayers(layers);
     map.addControls([]);
-
+    
     if(callback_function !== undefined) {
         callback_function(map);
     }
