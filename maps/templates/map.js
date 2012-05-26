@@ -45,13 +45,13 @@ function create_map(map_div, callback_function) {
                     {isBaseLayer: false}
                 {% endif %}
                 );
-            layers.push(layer)
+            layers.push(layer);
         {% else %}
         {% if p.protocol = 'OSM' %}
             layer = new OpenLayers.Layer.OSM(
                 '{{ p.name }}'
                 );
-            layers.push(layer)
+            layers.push(layer);
         {% else %}
         {% if p.protocol = 'WMS' %}
             layer = new OpenLayers.Layer.WMS(
@@ -64,7 +64,7 @@ function create_map(map_div, callback_function) {
                 {isBaseLayer: false}
                 {% endif %}
                 );
-            layers.push(layer)
+            layers.push(layer);
         {% else %}
         {% if p.protocol = 'WFS' %}
             layer = new OpenLayers.Layer.Vector(
@@ -87,7 +87,7 @@ function create_map(map_div, callback_function) {
                     {isBaseLayer: false}
                     {% endif %}
                 });
-            layers.push(layer)
+            layers.push(layer);
         {% endif %}
         {% endif %}
         {% endif %}
@@ -105,6 +105,7 @@ function create_map(map_div, callback_function) {
     {% endfor %}
     map = new OpenLayers.Map(map_div, mapOptions);
     map.addLayers(layers);
+    map.addControls([]);
 
     if(callback_function !== undefined) {
         callback_function(map);
