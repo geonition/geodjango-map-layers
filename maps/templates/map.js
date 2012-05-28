@@ -106,9 +106,13 @@ function create_map(map_div, callback_function) {
         }
     {% endfor %}
     
+    //make sure mapOptions controls are set correct
+    mapOptions.controls = [new OpenLayers.Control.Navigation(),
+                           new OpenLayers.Control.Zoom()];
+    mapOptions.theme = null;
+    
     map = new OpenLayers.Map(map_div, mapOptions);
     map.addLayers(layers);
-    map.addControls([]);
     
     if(callback_function !== undefined) {
         callback_function(map);
