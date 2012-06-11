@@ -16,13 +16,15 @@ class Layer(models.Model):
         ('WFS','WFS - Web Feature Service'),
         ('WMS','WMS - Web Map Service'),
         ('OSM','Open Street Maps'),
+        ('WMTS','Web Map Tile Service'),
+        ('TMS','Tile Map Service'),
     )
     
     name = models.CharField(max_length = 20)
     layer_type = models.CharField(max_length = 5, choices = LAYER_TYPES)
     protocol = models.CharField(max_length = 10, choices = PROTOCOLS)
     source = models.URLField(blank = True)
-    layer_info = models.TextField(editable = True)
+    layer_info = models.TextField(editable = True,blank = True)
     layers = models.CharField(max_length = 300,blank = True)
     
     def __unicode__(self):

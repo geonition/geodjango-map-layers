@@ -17,7 +17,6 @@ function create_map(map_div, callback_function) {
     {% for p in layer_data %}
         {% if p.protocol = 'ARCcache' %}
             var layer_info = {{ p.layer_info|safe }};
-            };
             layer = new OpenLayers.Layer.ArcGISCache(
                 "{{ p.name }}",
                 "{{ p.source }}",
@@ -114,4 +113,4 @@ function create_map(map_div, callback_function) {
     if(callback_function !== undefined) {
         callback_function(map);
     }
-}
+};
