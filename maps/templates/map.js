@@ -34,6 +34,18 @@ function create_map(map_div, callback_function) {
             };
             map_options_created = true;
         {% else %}
+        {% if p.protocol = 'WMTS' %}
+            var layer = new OpenLayers.Layer.WMTS({
+                name: "{{ p.name }}",
+                url: "{{ p.source }}",
+                layer: "{{ p.layers }}",
+                format: "image/png",
+                style: "_null",
+                opacity: 0.7,
+                isBaseLayer: false
+            }); 
+            layers.push(layer);
+        {% else %}
         {% if p.protocol = 'ARCGIS' %}
             layer = new OpenLayers.Layer.ArcGIS93Rest(
                 "{{ p.name }}",
