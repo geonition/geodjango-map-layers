@@ -27,10 +27,9 @@ function create_map(map_div, callback_function) {
                 maxExtent: layer.maxExtent,
                 units: layer.units,
                 resolutions: layer.resolutions,
-                numZoomLevels: 10,
+                numZoomLevels: layer.lods.length,
                 tileSize: layer.tileSize,
                 projection: layer.projection,
-                units: layer.units,
                 restrictedExtent: layer.maxExtent
             };
             map_options_created = true;
@@ -48,13 +47,13 @@ function create_map(map_div, callback_function) {
                     {isBaseLayer: false}
                 {% endif %}
                 );
-            layers.push(layer)
+            layers.push(layer);
         {% else %}
         {% if p.protocol = 'OSM' %}
             layer = new OpenLayers.Layer.OSM(
                 '{{ p.name }}'
                 );
-            layers.push(layer)
+            layers.push(layer);
         {% else %}
         {% if p.protocol = 'WMS' %}
             layer = new OpenLayers.Layer.WMS(
@@ -67,7 +66,7 @@ function create_map(map_div, callback_function) {
                 {isBaseLayer: false}
                 {% endif %}
                 );
-            layers.push(layer)
+            layers.push(layer);
         {% else %}
         {% if p.protocol = 'WFS' %}
             layer = new OpenLayers.Layer.Vector(
@@ -85,12 +84,12 @@ function create_map(map_div, callback_function) {
                         count_order(event);
                     },
                     {% if p.layer_type = 'BL'%}
-                    {isBaseLayer: true}
+                    isBaseLayer: true
                     {% else %}
-                    {isBaseLayer: false}
+                    isBaseLayer: false
                     {% endif %}
                 });
-            layers.push(layer)
+            layers.push(layer);
         {% endif %}
         {% endif %}
         {% endif %}
@@ -106,6 +105,11 @@ function create_map(map_div, callback_function) {
             };
         }
     {% endfor %}
+    
+    //make sure mapOptions controls are set correct
+    mapOptions.controls = [new OpenLayers.Control.Navigation(),
+                           new OpenLayers.Control.Zoom()];
+    mapOptions.theme = null;
     
     map = new OpenLayers.Map(map_div, mapOptions);
     map.addLayers(layers);
