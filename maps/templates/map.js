@@ -57,9 +57,9 @@ function create_map(map_div, callback_function) {
         {% else %}
         {% if p.protocol = 'WMS' %}
             layer = new OpenLayers.Layer.WMS(
-                "{{ p.layer_name }}",
+                "{{ p.name }}",
                 "{{ p.source }}",
-                {layers: "{{ p.layer }}"},
+                {layers: "{{ p.layers }}"},
                 {% if p.layer_type = 'BL'%}
                 {isBaseLayer: true}
                 {% else %}
@@ -107,8 +107,7 @@ function create_map(map_div, callback_function) {
     {% endfor %}
     
     //make sure mapOptions controls are set correct
-    mapOptions.controls = [new OpenLayers.Control.Navigation(),
-                           new OpenLayers.Control.Zoom()];
+    mapOptions.controls = [new OpenLayers.Control.Zoom()];
     mapOptions.theme = null;
     
     map = new OpenLayers.Map(map_div, mapOptions);
