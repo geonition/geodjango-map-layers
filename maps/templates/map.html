@@ -1,4 +1,3 @@
-<!doctype html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -10,12 +9,15 @@
             height: 100%;
             margin: 0;
             }
-    </style>    
-    <script src="https://softgis.org.aalto.fi/OpenLayers212/OpenLayers.js"></script>
-    <script type="text/javascript" src="{% url map_js map_slug_name=map_slug %}"></script>
+    </style>
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/openlayers.css" />
     
 </head>
 <body onload="create_map('map');">
+
 <div id="map"></div>     
+
+<script src="{{ STATIC_URL }}js/libs/OpenLayers-gnt.js"></script>
+<script type="text/javascript" src="{% url map_js map_slug_name=map_slug %}"></script>
 </body>
 </html>
