@@ -13,14 +13,14 @@ callback_function -- callback function the to be called after creation
     The callback_function will get the map as a parameter
 */
 function create_map(map_div, callback_function) {
-
     var map_options_created = false;
     {% for p in layer_data %}
         {% if p.protocol = 'ARCcache' %}
+            var layer_info = {{ p.layer_info|safe }};
             layer = new OpenLayers.Layer.ArcGISCache(
                 "{{ p.name }}",
                 "{{ p.source }}",
-                { layerInfo: {{ p.layer_info|safe }} }
+                { layerInfo: layer_info}
                 );
             layers.push(layer);
             mapOptions = {
@@ -31,8 +31,20 @@ function create_map(map_div, callback_function) {
                 tileSize: layer.tileSize,
                 projection: layer.projection,
                 restrictedExtent: layer.maxExtent
-                };
+            };
             map_options_created = true;
+        {% else %}
+        {% if p.protocol = 'WMTS' %}
+            var layer = new OpenLayers.Layer.WMTS({
+                name: "{{ p.name }}",
+                url: "{{ p.source }}",
+                layer: "{{ p.layers }}",
+                format: "image/png",
+                style: "_null",
+                opacity: 0.7,
+                isBaseLayer: false
+            }); 
+            layers.push(layer);
         {% else %}
         {% if p.protocol = 'ARCGIS' %}
             layer = new OpenLayers.Layer.ArcGIS93Rest(
@@ -102,7 +114,7 @@ function create_map(map_div, callback_function) {
                 maxResolution: {{ map_data.max_resolution }},
                 numZoomLevels: {{ map_data.zoom_level }},
                 tileSize: new OpenLayers.Size({{ map_data.tile_size }})
-                };
+            };
         }
     {% endfor %}
     
@@ -112,8 +124,8 @@ function create_map(map_div, callback_function) {
     
     map = new OpenLayers.Map(map_div, mapOptions);
     map.addLayers(layers);
-    
+
     if(callback_function !== undefined) {
         callback_function(map);
     }
-}
+};
