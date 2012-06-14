@@ -35,24 +35,28 @@ function create_map(map_div, callback_function) {
             map_options_created = true;
         {% else %}
         {% if p.protocol = 'WMTS' %}
+            var matrixIds = new Array(16);
+            for (var i=0; i<16; ++i) {
+                matrixIds[i] = "EPSG:{{ map_data.projection }}:" + i;
+            }
             layer = new OpenLayers.Layer.WMTS({
                 name: "{{ p.name }}",
                 url: "{{ p.source }}",
                 layer: "{{ p.layers }}",
-                matrixSet: "EPSG:3067",
+                matrixSet: "EPSG:{{ map_data.projection }}",
+                matrixIds: matrixIds,
                 format: "image/png",
                 style: "_null",
                 opacity: 0.7,
-                isBaseLayer: false
+                /*{% if p.layer_type = 'BL'%}
+                    isBaseLayer: true,
+                    {% else %}*/
+                 //   isBaseLayer: false,
+                //{% endif %}*/
+               //wrapDateLine: false,
+                //visibility: true
             });
             layers.push(layer);
-        {% else %}
-        {% if p.protocol = 'TMS' %}
-            layer = new OpenLayers.Layer.TMS(
-                "{{ p.name }}", // name for display in LayerSwitcher
-                "{{ p.source }}", // service endpoint
-                {layername: "{{ p.layers }}", type: "png"} // required properties
-            );
         {% else %}
         {% if p.protocol = 'ARCGIS' %}
             layer = new OpenLayers.Layer.ArcGIS93Rest(
@@ -70,9 +74,7 @@ function create_map(map_div, callback_function) {
             layers.push(layer);
         {% else %}
         {% if p.protocol = 'OSM' %}
-            layer = new OpenLayers.Layer.OSM(
-                '{{ p.name }}'
-                );
+            layer = new OpenLayers.Layer.OSM();
             layers.push(layer);
         {% else %}
         {% if p.protocol = 'WMS' %}
@@ -116,23 +118,24 @@ function create_map(map_div, callback_function) {
         {% endif %}
         {% endif %}
         {% endif %}
-        {% endif %}
         if(map_options_created == false) {
             mapOptions = {
-                projection:"EPSG:{{ map_data.projection }}",
+                projection: "EPSG:{{ map_data.projection }}",
                 maxExtent: new OpenLayers.Bounds({{ map_data.max_extent }}),
+                units: "m",
                 maxResolution: {{ map_data.max_resolution }},
-                numZoomLevels: {{ map_data.zoom_level }},
+                zoom: {{ map_data.zoom_level }},
                 tileSize: new OpenLayers.Size({{ map_data.tile_size }})
             };
         }
     {% endfor %}
     
     //make sure mapOptions controls are set correct
-    mapOptions.controls = [new OpenLayers.Control.Zoom()];
+    //mapOptions.controls = [new OpenLayers.Control.ZoomPanel()];
     mapOptions.theme = null;
     
     map = new OpenLayers.Map(map_div, mapOptions);
+     map.addControl(new OpenLayers.Control.LayerSwitcher());
     map.addLayers(layers);
 
     if(callback_function !== undefined) {
