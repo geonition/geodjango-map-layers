@@ -2,7 +2,7 @@
 var map, layer, layers=[], mapOptions;
 
 /*
-This function craetes the map and layers.
+This function creates the map and layers.
 
 Additional parameters and layers can be given to the
 function.
