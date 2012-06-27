@@ -1,5 +1,16 @@
 
-var map, layer, layers=[], mapOptions;
+/*
+ Maps namespace
+ 
+ gnt.maps
+*/
+ gnt.maps = {};
+
+
+ gnt.maps.map;
+ gnt.maps.layer;
+ gnt.maps.layers=[];
+ gnt.maps.mapOptions;
 
 /*
 This function creates the map and layers.
@@ -12,7 +23,7 @@ initial_extent -- initial extent where the map should open
 callback_function -- callback function the to be called after creation
     The callback_function will get the map as a parameter
 */
-function create_map(map_div, callback_function) {
+ gnt.maps.create_map = function(map_div, callback_function) {
     var map_options_created = false;
     {% for p in layer_data %}
         {% if p.protocol = 'ARCcache' %}
@@ -22,7 +33,7 @@ function create_map(map_div, callback_function) {
                 "{{ p.source }}",
                 { layerInfo: layer_info}
             );
-            layers.push(layer);
+            gnt.maps.layers.push(layer);
             mapOptions = {
                 maxExtent: layer.maxExtent,
                 units: layer.units,
@@ -56,7 +67,7 @@ function create_map(map_div, callback_function) {
                //wrapDateLine: false,
                 //visibility: true
             });
-            layers.push(layer);
+            gnt.maps.layers.push(layer);
         {% else %}
         {% if p.protocol = 'ARCGIS' %}
             layer = new OpenLayers.Layer.ArcGIS93Rest(
@@ -71,11 +82,11 @@ function create_map(map_div, callback_function) {
                     {isBaseLayer: false}
                 {% endif %}
                 );
-            layers.push(layer);
+            gnt.maps.layers.push(layer);
         {% else %}
         {% if p.protocol = 'OSM' %}
             layer = new OpenLayers.Layer.OSM();
-            layers.push(layer);
+            gnt.maps.layers.push(layer);
         {% else %}
         {% if p.protocol = 'WMS' %}
             layer = new OpenLayers.Layer.WMS(
@@ -88,7 +99,7 @@ function create_map(map_div, callback_function) {
                 {isBaseLayer: false}
                 {% endif %}
                 );
-            layers.push(layer);
+            gnt.maps.layers.push(layer);
         {% else %}
         {% if p.protocol = 'WFS' %}
             layer = new OpenLayers.Layer.Vector(
@@ -111,7 +122,7 @@ function create_map(map_div, callback_function) {
                     isBaseLayer: false
                     {% endif %}
                 });
-            layers.push(layer);
+            gnt.maps.layers.push(layer);
         {% endif %}
         {% endif %}
         {% endif %}
@@ -119,7 +130,7 @@ function create_map(map_div, callback_function) {
         {% endif %}
         {% endif %}
         if(map_options_created == false) {
-            mapOptions = {
+            gnt.maps.mapOptions = {
                 projection: "EPSG:{{ map_data.projection }}",
                 maxExtent: new OpenLayers.Bounds({{ map_data.max_extent }}),
                 units: "m",
@@ -132,11 +143,11 @@ function create_map(map_div, callback_function) {
     
     //make sure mapOptions controls are set correct
     //mapOptions.controls = [new OpenLayers.Control.ZoomPanel()];
-    mapOptions.theme = null;
+    gnt.maps.mapOptions.theme = null;
     
-    map = new OpenLayers.Map(map_div, mapOptions);
+    map = new OpenLayers.Map(map_div, gnt.maps.mapOptions);
      map.addControl(new OpenLayers.Control.LayerSwitcher());
-    map.addLayers(layers);
+    map.addLayers(gnt.maps.layers);
 
     if(callback_function !== undefined) {
         callback_function(map);
