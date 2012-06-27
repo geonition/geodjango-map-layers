@@ -37,7 +37,8 @@ class Map(models.Model):
     projection = models.CharField(max_length = 15,
                                   default = getattr(settings, 'SPATIAL_REFERENCE_SYSTEM_ID', 4326))
     max_resolution = models.IntegerField(default = 50,
-                                         blank = True)
+                                         blank = True,
+                                         null = True)
     max_extent = models.CharField(max_length = 750,
                                   blank = True)
     zoom_level = models.IntegerField(default = 10,
