@@ -16,9 +16,8 @@
 <body onload="create_map('map');">
 
 <div id="map"></div>     
-
 <script src="https://softgis.org.aalto.fi/OpenLayers212/OpenLayers.js"></script>
-<!--<script src="{{ STATIC_URL }}js/libs/OpenLayers-gnt.js"></script>-->
+<script type="text/javascript" src="{% url api_javascript %}"></script>
 <script type="text/javascript" src="{% url map_js map_slug_name=map_slug %}"></script>
 </body>
 </html>
