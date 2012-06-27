@@ -3,6 +3,9 @@ from django.contrib.sites.models import Site
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
+from django.utils import simplejson as json
+from geonition_utils.http import HttpResponse
+from geonition_utils.views import RequestHandler
 from models import Map
 from models import Layer
 
@@ -22,6 +25,5 @@ def map_js(request, map_slug_name = ''):
                               {'map_data': map_data,
                                'layer_data': layer_data },
                               mimetype = "application/javascript",
-                              context_instance = RequestContext(request)) 
-
+                              context_instance = RequestContext(request))
     

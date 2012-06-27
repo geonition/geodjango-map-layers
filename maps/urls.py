@@ -7,6 +7,6 @@ urlpatterns = patterns('maps.views',
         name="map_test"),
     url(r'^javascript/(?P<map_slug_name>[\w+(+-_)*]+).js$',
         'map_js',
-        name="map_js"),    
-        
+        name="map_js"),
+             
         )
