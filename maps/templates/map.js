@@ -4,13 +4,13 @@
  
  gnt.maps
 */
- gnt.maps = {};
+gnt.maps = {};
 
 
- gnt.maps.map;
- gnt.maps.layer;
- gnt.maps.layers=[];
- gnt.maps.mapOptions;
+gnt.maps.map = undefined;
+gnt.maps.layer = undefined;
+gnt.maps.layers = [];
+gnt.maps.mapOptions = {};
 
 /*
 This function creates the map and layers.
@@ -23,7 +23,7 @@ initial_extent -- initial extent where the map should open
 callback_function -- callback function the to be called after creation
     The callback_function will get the map as a parameter
 */
- gnt.maps.create_map = function(map_div, callback_function) {
+gnt.maps.create_map = function (map_div, callback_function) {
     var map_options_created = false;
     {% for p in layer_data %}
         {% if p.protocol = 'ARCcache' %}
@@ -129,7 +129,7 @@ callback_function -- callback function the to be called after creation
         {% endif %}
         {% endif %}
         {% endif %}
-        if(map_options_created == false) {
+        if(map_options_created === false) {
             gnt.maps.mapOptions = {
                 projection: "EPSG:{{ map_data.projection }}",
                 maxExtent: new OpenLayers.Bounds({{ map_data.max_extent }}),
