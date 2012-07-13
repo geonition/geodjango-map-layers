@@ -34,7 +34,7 @@ callback_function -- callback function the to be called after creation
                 { layerInfo: layer_info}
             );
             gnt.maps.layers.push(layer);
-            mapOptions = {
+            gnt.maps.mapOptions = {
                 maxExtent: layer.maxExtent,
                 units: layer.units,
                 resolutions: layer.resolutions,
