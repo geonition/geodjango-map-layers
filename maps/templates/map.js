@@ -7,10 +7,10 @@
 gnt.maps = {};
 
 
-gnt.maps.map = undefined;
+var map = undefined;
 gnt.maps.layer = undefined;
 gnt.maps.layers = [];
-gnt.maps.mapOptions = {};
+
 
 /*
 This function creates the map and layers.
@@ -24,6 +24,7 @@ callback_function -- callback function the to be called after creation
     The callback_function will get the map as a parameter
 */
 gnt.maps.create_map = function (map_div, callback_function) {
+    var mapOptions;
     var map_options_created = false;
     {% for p in layer_data %}
         {% if p.protocol = 'ARCcache' %}
@@ -34,7 +35,7 @@ gnt.maps.create_map = function (map_div, callback_function) {
                 { layerInfo: layer_info}
             );
             gnt.maps.layers.push(layer);
-            gnt.maps.mapOptions = {
+            mapOptions = {
                 maxExtent: layer.maxExtent,
                 units: layer.units,
                 resolutions: layer.resolutions,
@@ -130,7 +131,7 @@ gnt.maps.create_map = function (map_div, callback_function) {
         {% endif %}
         {% endif %}
         if(map_options_created === false) {
-            gnt.maps.mapOptions = {
+            mapOptions = {
                 projection: "EPSG:{{ map_data.projection }}",
                 maxExtent: new OpenLayers.Bounds({{ map_data.max_extent }}),
                 units: "m",
@@ -143,10 +144,10 @@ gnt.maps.create_map = function (map_div, callback_function) {
     
     //make sure mapOptions controls are set correct
     //mapOptions.controls = [new OpenLayers.Control.ZoomPanel()];
-    gnt.maps.mapOptions.theme = null;
+    mapOptions['theme'] = null;
     
-    map = new OpenLayers.Map(map_div, gnt.maps.mapOptions);
-     map.addControl(new OpenLayers.Control.LayerSwitcher());
+    map = new OpenLayers.Map(map_div, mapOptions);
+    map.addControl(new OpenLayers.Control.LayerSwitcher());
     map.addLayers(gnt.maps.layers);
 
     if(callback_function !== undefined) {
