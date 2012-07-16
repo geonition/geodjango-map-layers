@@ -143,11 +143,14 @@ gnt.maps.create_map = function (map_div, callback_function) {
     {% endfor %}
     
     //make sure mapOptions controls are set correct
+    mapOptions.controls = [new OpenLayers.Control.Navigation(),
+                           new OpenLayers.Control.Zoom(),
+                           new OpenLayers.Control.LayerSwitcher()];
+    
     //mapOptions.controls = [new OpenLayers.Control.ZoomPanel()];
     mapOptions['theme'] = null;
     
     map = new OpenLayers.Map(map_div, mapOptions);
-    map.addControl(new OpenLayers.Control.LayerSwitcher());
     map.addLayers(gnt.maps.layers);
 
     if(callback_function !== undefined) {
