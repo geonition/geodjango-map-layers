@@ -10,6 +10,7 @@ setup(
     package_data = {
 	"maps": [
 	    "templates/*",
+            "fixtures/*"
 	    ]
         },
     zip_safe=False,
