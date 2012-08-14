@@ -1,5 +1,5 @@
 from django.contrib import admin
-from models import Map,Layer
+from maps.models import Map, Layer
 
 #class Admin(admin.OSMGeoAdmin):
 #    projection = 'EPSG:3067'   

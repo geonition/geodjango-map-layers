@@ -1,15 +1,12 @@
-# Create your views here.
-from django.contrib.sites.models import Site
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.core.urlresolvers import reverse
-from django.utils import simplejson as json
-from geonition_utils.http import HttpResponse
-from geonition_utils.views import RequestHandler
-from models import Map
-from models import Layer
+from maps.models import Map
 
 def map_test(request, map_slug_name = ''):
+    """
+    This view is used for testing the map, and viewing the
+    layers.
+    """
     map_data = Map.objects.get(slug_name = map_slug_name)
     layer_data = map_data.layers.all()
     return render_to_response('map.html',
@@ -19,6 +16,10 @@ def map_test(request, map_slug_name = ''):
                               context_instance = RequestContext(request)) 
 
 def map_js(request, map_slug_name = ''):
+    """
+    This is the javascript that can be used to
+    set up the defined map.
+    """
     map_data = Map.objects.get(slug_name = map_slug_name)
     layer_data = map_data.layers.all()
     return render_to_response('map.js',

@@ -1,7 +1,5 @@
 from django.db import models
 from django.conf import settings
-from django.contrib.sites.managers import CurrentSiteManager
-from django.contrib.sites.models import Site
 from django.template.defaultfilters import slugify
 
 class Layer(models.Model):
@@ -21,21 +19,29 @@ class Layer(models.Model):
     )
     
     name = models.CharField(max_length = 20)
-    layer_type = models.CharField(max_length = 5, choices = LAYER_TYPES)
-    protocol = models.CharField(max_length = 10, choices = PROTOCOLS)
+    layer_type = models.CharField(max_length = 5,
+                                  choices = LAYER_TYPES)
+    protocol = models.CharField(max_length = 10,
+                                choices = PROTOCOLS)
     source = models.URLField(blank = True)
-    layer_info = models.TextField(editable = True,blank = True)
-    layers = models.CharField(max_length = 300,blank = True)
+    layer_info = models.TextField(editable = True,
+                                  blank = True)
+    layers = models.CharField(max_length = 300,
+                              blank = True)
     
     def __unicode__(self):
         return self.name
         
 
 class Map(models.Model):
-    slug_name = models.SlugField(max_length = 50, primary_key = True, editable = False)
+    slug_name = models.SlugField(max_length = 50,
+                                 primary_key = True,
+                                 editable = False)
     name = models.CharField(max_length = 50)
     projection = models.CharField(max_length = 15,
-                                  default = getattr(settings, 'SPATIAL_REFERENCE_SYSTEM_ID', 4326))
+                                  default = getattr(settings,
+                                                    'SPATIAL_REFERENCE_SYSTEM_ID',
+                                                    4326))
     max_resolution = models.IntegerField(default = 50,
                                          blank = True,
                                          null = True)
