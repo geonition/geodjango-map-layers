@@ -13,11 +13,14 @@
     <link rel="stylesheet" href="{{ STATIC_URL }}css/openlayers.css" />
     
 </head>
-<body onload="create_map('map');">
+<body onload="gnt.maps.create_map('map', function(map) {console.log(map);map.setCenter(0, 0)});">
 
-<div id="map"></div>     
-<script src="{{ STATIC_URL }}js/libs/OpenLayers-gnt.js"></script>
-<script type="text/javascript" src="{% url api_javascript %}"></script>
+<div id="map"></div>
+<script type="text/javascript">
+    gnt = {};
+    gnt.maps = {};
+</script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/libs/OpenLayers-gnt.js"></script>
 <script type="text/javascript" src="{% url map_js map_slug_name=map_slug %}"></script>
 </body>
 </html>

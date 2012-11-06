@@ -13,7 +13,7 @@ def map_test(request, map_slug_name = ''):
                               {'map_data': map_data,
                                'layer_data': layer_data,
                                'map_slug': map_slug_name},
-                              context_instance = RequestContext(request)) 
+                              context_instance = RequestContext(request))
 
 def map_js(request, map_slug_name = ''):
     """

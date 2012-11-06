@@ -1,6 +1,8 @@
 from django.db import models
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
+from urllib2 import urlopen
 
 class Layer(models.Model):
     LAYER_TYPES = (
@@ -28,11 +30,29 @@ class Layer(models.Model):
                                   blank = True)
     layers = models.CharField(max_length = 300,
                               blank = True)
-    
+        
     def __unicode__(self):
         return self.name
+
+"""
+Proxy models for differnt kind of layers
+"""
+class OpenStreetMapLayer(Layer):
+    
+    class Meta:
+        proxy = True
         
 
+class ArcGISCacheLayer(Layer):
+    
+    
+    
+    class Meta:
+        proxy = True
+
+"""
+Map which is a collection of layers (that fit together)
+"""
 class Map(models.Model):
     slug_name = models.SlugField(max_length = 50,
                                  primary_key = True,
@@ -56,6 +76,9 @@ class Map(models.Model):
     def save(self, *args, **kwargs):
         self.slug_name = slugify(self.name)
         super(Map, self).save(*args, **kwargs)
+        
+    def get_absolute_url(self):
+        return reverse('map_test', kwargs={'map_slug_name': self.slug_name})
         
     def __unicode__(self):
         return self.name
