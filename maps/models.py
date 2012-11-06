@@ -45,8 +45,6 @@ class OpenStreetMapLayer(Layer):
 
 class ArcGISCacheLayer(Layer):
     
-    
-    
     class Meta:
         proxy = True
 
