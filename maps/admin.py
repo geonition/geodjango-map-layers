@@ -23,6 +23,7 @@ class ArcGISCacheLayerAdmin(admin.ModelAdmin):
         layer_info = urlopen(form.cleaned_data['source'] + '?f=json').read()
         obj.layer_info = layer_info
         obj.layer_type = 'BL'
+        obj.protocol = 'ARCcache'
         obj.save()
 
 admin.site.register(ArcGISCacheLayer, ArcGISCacheLayerAdmin)
