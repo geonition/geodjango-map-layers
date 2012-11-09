@@ -59,7 +59,8 @@ gnt.maps.create_map = function (map_div, callback_function) {
                 matrixIds: matrixIds,
                 format: "image/png",
                 style: "_null",
-                opacity: 0.7,
+                attribution: "Map data &copy; MML MTK 05-10/2012, <a href='http://www.maanmittauslaitos.fi/avoindata_lisenssi_versio1_20120501' target='_blank'>Lisenssi</a>",
+                opacity: 1,
                 /*{% if p.layer_type = 'BL'%}
                     isBaseLayer: true,
                     {% else %}*/
@@ -136,7 +137,11 @@ gnt.maps.create_map = function (map_div, callback_function) {
                 maxExtent: new OpenLayers.Bounds({{ map_data.max_extent }}),
                 units: "m",
                 maxResolution: {{ map_data.max_resolution }},
+                //maxResolution: 19.109257068634033,
+                //maxResolution: 156543.0339,
+                //minResolution: 2.388657133579254,
                 zoom: {{ map_data.zoom_level }},
+                numZoomLevels: 15,
                 tileSize: new OpenLayers.Size({{ map_data.tile_size }})
             };
         }
@@ -144,6 +149,7 @@ gnt.maps.create_map = function (map_div, callback_function) {
     
     //make sure mapOptions controls are set correct
     mapOptions.controls = [new OpenLayers.Control.Navigation(),
+                        new OpenLayers.Control.Attribution(),
                            new OpenLayers.Control.Zoom()];
     
     mapOptions['theme'] = null;
