@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="{{ STATIC_URL }}css/openlayers.css" />
     
 </head>
-<body onload="gnt.maps.create_map('map', function(map) {map.setCenter(0, 0)});">
+<body onload="gnt.maps.create_map('map');">
 
 <div id="map"></div>
 <script type="text/javascript">
@@ -21,6 +21,6 @@
     gnt.maps = {};
 </script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/libs/OpenLayers-gnt.js"></script>
-<script type="text/javascript" src="{% url map_js map_slug_name=map_slug %}"></script>
+<script type="text/javascript" src="{% url layer_js layer_slug_name=layer_slug %}"></script>
 </body>
 </html>

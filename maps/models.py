@@ -3,6 +3,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 from urllib2 import urlopen
+from django.utils import simplejson as json
 
 class Layer(models.Model):
     LAYER_TYPES = (
@@ -11,8 +12,8 @@ class Layer(models.Model):
     )
     
     PROTOCOLS = (
-        ('ARCcache','ArcGIS Cache'),
-        ('ARCGIS','ArcGIS93Rest'),
+        ('ArcGISCache','ArcGIS Cache'),
+        ('ARCREST','ArcGISRest'),
         ('WFS','WFS - Web Feature Service'),
         ('WMS','WMS - Web Map Service'),
         ('OSM','Open Street Maps'),
@@ -20,34 +21,74 @@ class Layer(models.Model):
         ('TMS','Tile Map Service'),
     )
     
+    slug_name = models.SlugField(max_length = 50,
+                                 primary_key = True,
+                                 editable = False)
     name = models.CharField(max_length = 20)
     layer_type = models.CharField(max_length = 5,
                                   choices = LAYER_TYPES)
-    protocol = models.CharField(max_length = 10,
+    protocol = models.CharField(max_length = 20,
                                 choices = PROTOCOLS)
     source = models.URLField(blank = True)
     layer_info = models.TextField(editable = True,
                                   blank = True)
     layers = models.CharField(max_length = 300,
                               blank = True)
+    
+    def save(self, *args, **kwargs):
+        self.slug_name = slugify(self.name)
+        super(Layer, self).save(*args, **kwargs)
+        
+        
+    def get_absolute_url(self):
+        return reverse('layer_preview', kwargs={'layer_slug_name': self.slug_name})
         
     def __unicode__(self):
         return self.name
 
-"""
-Proxy models for differnt kind of layers
-"""
-class OpenStreetMapLayer(Layer):
+class Source(models.Model):
+    """
+    This model represents a source for services.
     
-    class Meta:
-        proxy = True
+    Supports at the moment ArcGISServer
+    """
+    SERVICE_TYPES = (
+        ('ArcGISServer', 'ArcGISServer'),
+    )
+    
+    service_type = models.CharField(
+        max_length = 100,
+        choices = SERVICE_TYPES
+    )
+    source = models.URLField(verify_exists = True)
+    
+    def save(self, *args, **kwargs):
         
-
-class ArcGISCacheLayer(Layer):
-    
-    class Meta:
-        proxy = True
-
+        if self.service_type == 'ArcGISServer':
+            
+            service_info = json.loads(urlopen(self.source + '?f=json').read())
+            print service_info
+            #create layers that you can retreive from this source
+            
+            
+            #ArcGIS cache layer
+            if service_info['singleFusedMapCache']:
+                arcgiscache = Layer(name = service_info['documentInfo']['Title'],
+                                    layer_type = 'BL',
+                                    protocol = 'ArcGISCache',
+                                    source = self.source,
+                                    layer_info = json.dumps({
+                                        'tileInfo': service_info['tileInfo'],
+                                        'fullExtent': service_info['fullExtent'],
+                                        'spatialReference': service_info['spatialReference'],
+                                        'units': service_info['units'],
+                                        'initialExtent': service_info['initialExtent']
+                                    }))
+                arcgiscache.save()
+        
+        super(Source, self).save(*args, **kwargs)
+        
+        
 """
 Map which is a collection of layers (that fit together)
 """
@@ -76,7 +117,8 @@ class Map(models.Model):
         super(Map, self).save(*args, **kwargs)
         
     def get_absolute_url(self):
-        return reverse('map_test', kwargs={'map_slug_name': self.slug_name})
+        return reverse('map_preview', kwargs={'map_slug_name': self.slug_name})
         
     def __unicode__(self):
         return self.name
+
