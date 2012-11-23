@@ -1,6 +1,9 @@
+from django.core.urlresolvers import reverse
 from django.core import serializers
+from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.utils import simplejson as json
 from maps.models import Map
 from maps.models import Layer
 
@@ -52,6 +55,28 @@ def layer_js(request, layer_slug_name = ''):
                               {'layer_data': layer_data},
                               mimetype = "application/javascript",
                               context_instance = RequestContext(request))
+
+
+def maps(request):
+    """
+    This function returns a list of maps in the following format:
+    {
+        name: <name of map>,
+        javascript: <url to javascript file>,
+        preview: <url to preview of map>
+    }
+    """
+    maps = []
+    for mapobj in Map.objects.all():
+        maps.append({
+            'name': mapobj.name,
+            'javascript': reverse('map_js', kwargs={'map_slug_name': mapobj.slug_name}),
+            'preview': reverse('map_preview', kwargs={'map_slug_name': mapobj.slug_name})
+        })
+    
+    return HttpResponse(json.dumps(maps), mimetype="application/json")
+    
+    
 
 
     

@@ -14,4 +14,7 @@ urlpatterns = patterns('maps.views',
     url(r'^layerjs/(?P<layer_slug_name>[\w+(+-_)*]+).js$',
         'layer_js',
         name="layer_js"),
+    url(r'^maps.json$',
+        'maps',
+        name="maps"),
         )
