@@ -17,11 +17,8 @@ class Layer(models.Model):
     PROTOCOLS = (
         ('ArcGISCache','ArcGIS Cache'),
         ('ARCREST','ArcGISRest'),
-        ('WFS','WFS - Web Feature Service'),
-        ('WMS','WMS - Web Map Service'),
-        ('OSM','Open Street Maps'),
-        ('WMTS','Web Map Tile Service'),
-        ('TMS','Tile Map Service'),
+        ('OSM-standard', 'OSM standard'),
+        ('OSM-cyclemap', 'OSM cyclemap')
     )
     
     slug_name = models.SlugField(max_length = 100,
@@ -58,6 +55,9 @@ class Source(models.Model):
     """
     SERVICE_TYPES = (
         ('ArcGISServer', 'ArcGISServer'),
+        ('OSM-standard', 'OpenStreetMap standard'),
+        ('OSM-cyclemap', 'OpenStreetMap cyclemap'),
+        ('OSM-mapquest', 'OpenStreetMap mapquest')
     )
     
     service_type = models.CharField(
@@ -65,7 +65,8 @@ class Source(models.Model):
         choices = SERVICE_TYPES
     )
     source = models.URLField(verify_exists = True,
-                             help_text = _('For ArcGIS Servers give as source the service url that end with /rest/services'))
+                             blank = True,
+                             help_text = _('For ArcGIS Servers give as source the service url that end with /rest/services. For OSM services leave this field blank.'))
     
     def parse_arcgis_services(self, url, folder=''):
         """
@@ -132,10 +133,55 @@ class Source(models.Model):
             
             self.parse_arcgis_services(self.source)
         
+        elif self.service_type == 'OSM-standard':
+            # create layers for OpenStreetMap styles
+            
+            #osm standard
+            layer, created = Layer.objects.get_or_create(
+                        name = "osm-standard",
+                        defaults = {
+                            'layer_type': 'BL',
+                            'protocol': 'OSM-standard',
+                            'source': '',
+                            'layer_info': '',
+                            'layers': ''
+                        })
+        
+        elif self.service_type == 'OSM-cyclemap':
+            # create layers for OpenStreetMap styles
+            
+            #osm standard
+            layer, created = Layer.objects.get_or_create(
+                        name = "osm-cyclemap",
+                        defaults = {
+                            'layer_type': 'BL',
+                            'protocol': 'OSM-cyclemap',
+                            'source': '',
+                            'layer_info': '',
+                            'layers': ''
+                        })
+        
+        
+        elif self.service_type == 'OSM-mapquest':
+            # create layers for OpenStreetMap styles
+            
+            #osm standard
+            layer, created = Layer.objects.get_or_create(
+                        name = "osm-mapquest",
+                        defaults = {
+                            'layer_type': 'BL',
+                            'protocol': 'OSM-mapquest',
+                            'source': '',
+                            'layer_info': '',
+                            'layers': ''
+                        })
+            
+            
+            
         super(Source, self).save(*args, **kwargs)
         
     def __unicode__(self):
-        return self.source
+        return '%s %s' % (self.service_type, self.source)
 
 
 

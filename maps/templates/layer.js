@@ -9,10 +9,18 @@ gnt.maps.create_map = function (map_div, callback_function) {
     var map_options_created = false;
     var initial_center = [0,0];
     
-    {% if layer_data.protocol == 'OSM' %}
-    layer = new OpenLayers.Layer.OSM();
+    {% if layer_data.protocol == 'OSM-standard' %}
+    layer = new OpenLayers.Layer.OSM('OSM-standard');
     gnt.maps.layers.push(layer);
     {% endif %}
+    
+    {% if layer_data.protocol == 'OSM-cyclemap' %}
+    layer = new OpenLayers.Layer.OSM('OSM-cyclemap',
+        ["http://a.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png",
+        "http://b.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png",
+        "http://c.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png"]);
+    gnt.maps.layers.push(layer);
+    {% endif%}
     
     {% if layer_data.protocol == 'ArcGISCache' %}
     var layer_info = {{ layer_data.layer_info|safe }}; 
