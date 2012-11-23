@@ -6,7 +6,7 @@ from maps.models import Source
 from urllib2 import urlopen
 
 #class Admin(admin.OSMGeoAdmin):
-#    projection = 'EPSG:3067'   
+#    projection = 'EPSG:3067'
 
 
 admin.site.register(Source)
