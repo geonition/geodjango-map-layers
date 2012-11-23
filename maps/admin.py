@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils import simplejson as json
+from maps.forms import MapForm
 from maps.models import Map
 from maps.models import Layer
 from maps.models import Source
@@ -10,10 +11,26 @@ from urllib2 import urlopen
 
 
 admin.site.register(Source)
-admin.site.register(Layer)
+
+class LayerAdmin(admin.ModelAdmin):
+    list_display = ('name', 'source')
+    fields = ('name',
+              'layer_type',
+              'protocol',
+              'source',
+              'layer_info')
+    readonly_fields = ('name',
+                       'layer_type',
+                       'protocol',
+                       'source',
+                       'layer_info')
+    
+admin.site.register(Layer, LayerAdmin)
 
 class MapAdmin(admin.ModelAdmin):
+    form = MapForm
     
+    """
     def save_model(self, request, obj, form, change):
         
         for layer in form.cleaned_data['layers']:
@@ -26,5 +43,6 @@ class MapAdmin(admin.ModelAdmin):
                 obj.projection = '900913'
         
         obj.save()
+    """
     
 admin.site.register(Map, MapAdmin)

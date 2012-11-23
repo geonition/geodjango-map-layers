@@ -39,7 +39,7 @@ class Layer(models.Model):
                               blank = True)
     
     def save(self, *args, **kwargs):
-        self.slug_name = slugify(self.name)
+        self.slug_name = slugify(self.name).replace('_', '-') #undescores are a problem in admin view on site
         super(Layer, self).save(*args, **kwargs)
         
         
@@ -89,18 +89,37 @@ class Source(models.Model):
             
                 #ArcGIS cache layer
                 if mapserver_info['singleFusedMapCache']:
-                    arcgiscache = Layer(name = "arcgiscache-%s-%s" % (service['name'], mapserver_info['documentInfo']['Title']),
-                                        layer_type = 'BL',
-                                        protocol = 'ArcGISCache',
-                                        source = '%s/%s/MapServer' % (url, service['name']),
-                                        layer_info = json.dumps({
-                                            'tileInfo': mapserver_info['tileInfo'],
-                                            'fullExtent': mapserver_info['fullExtent'],
-                                            'spatialReference': mapserver_info['spatialReference'],
-                                            'units': mapserver_info['units'],
-                                            'initialExtent': mapserver_info['initialExtent']
-                                        }))
-                    arcgiscache.save()
+                    layer, created = Layer.objects.get_or_create(
+                        name = "EPSG:%s-arcgiscache-%s-%s" % (mapserver_info['spatialReference']['wkid'],
+                                                         service['name'],
+                                                         mapserver_info['documentInfo']['Title']),
+                        defaults = {
+                            'layer_type': 'BL',
+                            'protocol': 'ArcGISCache',
+                            'source': '%s/%s/MapServer' % (url, service['name']),
+                            'layer_info': json.dumps({
+                                'tileInfo': mapserver_info['tileInfo'],
+                                'fullExtent': mapserver_info['fullExtent'],
+                                'spatialReference': mapserver_info['spatialReference'],
+                                'units': mapserver_info['units'],
+                                'initialExtent': mapserver_info['initialExtent'],
+                                'copyrightText': mapserver_info['copyrightText']
+                            })
+                        })
+                    
+                    if not created:
+                        layer.layer_type = 'BL'
+                        layer.protocol = 'ArcGISCache'
+                        layer.source = '%s/%s/MapServer' % (url, service['name'])
+                        layer.layer_info = json.dumps({
+                                'tileInfo': mapserver_info['tileInfo'],
+                                'fullExtent': mapserver_info['fullExtent'],
+                                'spatialReference': mapserver_info['spatialReference'],
+                                'units': mapserver_info['units'],
+                                'initialExtent': mapserver_info['initialExtent'],
+                                'copyrightText': mapserver_info['copyrightText']
+                            })
+                        layer.save()
         
         #for all folders found do parsing again
         folders = info['folders']
@@ -117,6 +136,9 @@ class Source(models.Model):
         
     def __unicode__(self):
         return self.source
+
+
+
 """
 Map which is a collection of layers (that fit together)
 """

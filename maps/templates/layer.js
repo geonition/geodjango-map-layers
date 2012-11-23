@@ -19,7 +19,9 @@ gnt.maps.create_map = function (map_div, callback_function) {
     layer = new OpenLayers.Layer.ArcGISCache(
                 "{{ layer_data.name }}",
                 "{{ layer_data.source }}",
-                { layerInfo: layer_info
+                {
+                layerInfo: layer_info,
+                attribution: layer_info.copyrightText
                 }
             );
     gnt.maps.layers.push(layer);
@@ -37,12 +39,14 @@ gnt.maps.create_map = function (map_div, callback_function) {
     
     //make sure mapOptions controls are set correct
     mapOptions.controls = [new OpenLayers.Control.Navigation(),
-                           new OpenLayers.Control.Zoom()];
+                           new OpenLayers.Control.Zoom(),
+                           new OpenLayers.Control.Attribution()];
     
     mapOptions['theme'] = null;
     
     map = new OpenLayers.Map(map_div, mapOptions);
     map.addLayers(gnt.maps.layers);
+    map.zoomToMaxExtent();
 
     if(callback_function !== undefined) {
         callback_function(map);
