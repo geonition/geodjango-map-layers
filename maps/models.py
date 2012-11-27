@@ -18,7 +18,8 @@ class Layer(models.Model):
         ('ArcGISCache','ArcGIS Cache'),
         ('ARCREST','ArcGISRest'),
         ('OSM-standard', 'OSM standard'),
-        ('OSM-cyclemap', 'OSM cyclemap')
+        ('OSM-cyclemap', 'OSM cyclemap'),
+        ('OSM-mapquest', 'OSM mapquest')
     )
     
     slug_name = models.SlugField(max_length = 100,

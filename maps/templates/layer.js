@@ -20,8 +20,8 @@ gnt.maps.create_map = function (map_div, callback_function) {
         "http://b.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png",
         "http://c.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png"]);
     gnt.maps.layers.push(layer);
-    {% endif%}
-        
+    {% endif %}
+    
     {% if layer.protocol == 'OSM-mapquest' %}
     layer = new OpenLayers.Layer.OSM('OSM-mapquest',
         ["http://otile1.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.jpg",
