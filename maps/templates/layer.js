@@ -22,7 +22,7 @@ gnt.maps.create_map = function (map_div, callback_function) {
     gnt.maps.layers.push(layer);
     {% endif %}
     
-    {% if layer.protocol == 'OSM-mapquest' %}
+    {% if layer_data.protocol == 'OSM-mapquest' %}
     layer = new OpenLayers.Layer.OSM('OSM-mapquest',
         ["http://otile1.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.jpg",
          "http://otile2.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.jpg",
