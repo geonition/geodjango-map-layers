@@ -73,6 +73,18 @@ gnt.maps.create_map = function (map_div, callback_function) {
             restrictedExtent: layer.maxExtent
         };
         {% endif %}
+        
+    
+        {% if layer.protocol == 'ArcGISREST' %}
+        layer = new OpenLayers.Layer.ArcGIS93Rest(
+            "{{ layer.name }}",
+            "{{ layer.source }}",
+            {{ layer.layer_info|safe }},
+            {isBaseLayer: false}        
+        );
+        gnt.maps.layers.push(layer);
+        {% endif %}
+        
     {% endfor %}
     
     //make sure mapOptions controls are set correct

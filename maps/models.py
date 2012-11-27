@@ -16,7 +16,7 @@ class Layer(models.Model):
     
     PROTOCOLS = (
         ('ArcGISCache','ArcGIS Cache'),
-        ('ARCREST','ArcGISRest'),
+        ('ArcGISREST','ArcGISRest'),
         ('OSM-standard', 'OSM standard'),
         ('OSM-cyclemap', 'OSM cyclemap'),
         ('OSM-mapquest', 'OSM mapquest')
@@ -122,6 +122,36 @@ class Source(models.Model):
                                 'copyrightText': mapserver_info['copyrightText']
                             })
                         layer.save()
+                
+                #create one ArcGISRest layer from the service
+                available_layers = [str(al['id']) for al in mapserver_info['layers']]
+                img_format = "png"
+                
+                layer, created = Layer.objects.get_or_create(
+                    name = "EPSG:%s-arcgisrest-%s-%s" % (mapserver_info['spatialReference']['wkid'],
+                                                     service['name'],
+                                                     mapserver_info['documentInfo']['Title']),
+                    defaults = {
+                        'layer_type': 'OL',
+                        'protocol': 'ArcGISREST',
+                        'source': '%s/%s/MapServer/export' % (url, service['name']),
+                        'layer_info': json.dumps({
+                            'layers': "show:%s" % ','.join(available_layers),
+                            'format': img_format,
+                            'transparent': True
+                        })
+                    })
+                
+                if not created:
+                    layer.layer_type = 'OL'
+                    layer.protocol = 'ArcGISREST'
+                    layer.source = '%s/%s/MapServer/export' % (url, service['name'])
+                    layer.layer_info = json.dumps({
+                            'layers': "show:%s" % ','.join(available_layers),
+                            'format': img_format,
+                            'transparent': True
+                        })
+                    layer.save()
         
         #for all folders found do parsing again
         folders = info['folders']

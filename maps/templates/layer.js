@@ -31,6 +31,16 @@ gnt.maps.create_map = function (map_div, callback_function) {
     gnt.maps.layers.push(layer);
     {% endif %}
     
+    {% if layer_data.protocol == 'ArcGISREST' %}
+    layer = new OpenLayers.Layer.ArcGIS93Rest(
+        "{{ layer_data.name }}",
+        "{{ layer_data.source }}",
+        {{ layer_data.layer_info|safe }},
+        {isBaseLayer: false}        
+    );
+    gnt.maps.layers.push(layer);
+    {% endif %}
+    
     {% if layer_data.protocol == 'ArcGISCache' %}
     var layer_info = {{ layer_data.layer_info|safe }}; 
     layer = new OpenLayers.Layer.ArcGISCache(
