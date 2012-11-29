@@ -3,10 +3,18 @@ from django.conf.urls.defaults import url
 
 urlpatterns = patterns('maps.views',
     url(r'^map/(?P<map_slug_name>[\w+(+-_)*]+)/$',
-        'map_test',
-        name="map_test"),
-    url(r'^javascript/(?P<map_slug_name>[\w+(+-_)*]+).js$',
+        'map_preview',
+        name="map_preview"),
+    url(r'^layer/(?P<layer_slug_name>[\w+(+-_)*]+)/$',
+        'layer_preview',
+        name="layer_preview"),
+    url(r'^mapjs/(?P<map_slug_name>[\w+(+-_)*]+).js$',
         'map_js',
         name="map_js"),
-             
+    url(r'^layerjs/(?P<layer_slug_name>[\w+(+-_)*]+).js$',
+        'layer_js',
+        name="layer_js"),
+    url(r'^maps.json$',
+        'maps',
+        name="maps"),
         )
