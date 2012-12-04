@@ -31,6 +31,15 @@ gnt.maps.create_map = function (map_div, callback_function) {
     gnt.maps.layers.push(layer);
     {% endif %}
     
+    {% if layer.protocol == 'OSM-watercolor' %}
+    layer = new OpenLayers.Layer.OSM('OSM-watercolor',
+        ["http://a.tile.stamen.com/watercolor/${z}/${x}/${y}.jpg",
+         "http://b.tile.stamen.com/watercolor/${z}/${x}/${y}.jpg",
+         "http://c.tile.stamen.com/watercolor/${z}/${x}/${y}.jpg",
+         "http://d.tile.stamen.com/watercolor/${z}/${x}/${y}.jpg"]);
+    gnt.maps.layers.push(layer);
+    {% endif %}
+    
     {% if layer_data.protocol == 'ArcGISREST' %}
     layer = new OpenLayers.Layer.ArcGIS93Rest(
         "{{ layer_data.name }}",

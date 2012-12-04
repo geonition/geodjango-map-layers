@@ -28,7 +28,7 @@ gnt.maps.create_map = function (map_div, callback_function) {
     var map_options_created = false;
     
     {% for layer in layer_data %}
-    
+        
         {% if layer.protocol == 'OSM-standard' %}
         layer = new OpenLayers.Layer.OSM('OSM-standard');
         gnt.maps.layers.push(layer);
@@ -48,6 +48,15 @@ gnt.maps.create_map = function (map_div, callback_function) {
              "http://otile2.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.jpg",
              "http://otile3.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.jpg",
              "http://otile4.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.jpg"]);
+        gnt.maps.layers.push(layer);
+        {% endif %}
+    
+        {% if layer.protocol == 'OSM-watercolor' %}
+        layer = new OpenLayers.Layer.OSM('OSM-watercolor',
+            ["http://a.tile.stamen.com/watercolor/${z}/${x}/${y}.jpg",
+             "http://b.tile.stamen.com/watercolor/${z}/${x}/${y}.jpg",
+             "http://c.tile.stamen.com/watercolor/${z}/${x}/${y}.jpg",
+             "http://d.tile.stamen.com/watercolor/${z}/${x}/${y}.jpg"]);
         gnt.maps.layers.push(layer);
         {% endif %}
         

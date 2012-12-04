@@ -19,6 +19,7 @@ class Layer(models.Model):
         ('ArcGISREST','ArcGISRest'),
         ('OSM-standard', 'OSM standard'),
         ('OSM-cyclemap', 'OSM cyclemap'),
+        ('OSM-watercolor', 'OSM watercolor'),
         ('OSM-mapquest', 'OSM mapquest')
     )
     
@@ -58,6 +59,7 @@ class Source(models.Model):
         ('ArcGISServer', 'ArcGISServer'),
         ('OSM-standard', 'OpenStreetMap standard'),
         ('OSM-cyclemap', 'OpenStreetMap cyclemap'),
+        ('OSM-watercolor', 'OpenStreetMap Stamen watercolor'),
         ('OSM-mapquest', 'OpenStreetMap mapquest')
     )
     
@@ -202,6 +204,21 @@ class Source(models.Model):
                         defaults = {
                             'layer_type': 'BL',
                             'protocol': 'OSM-mapquest',
+                            'source': '',
+                            'layer_info': '',
+                            'layers': ''
+                        })
+        
+        
+        elif self.service_type == 'OSM-watercolor':
+            # create layers for OpenStreetMap styles
+            
+            #osm standard
+            layer, created = Layer.objects.get_or_create(
+                        name = "osm-watercolor",
+                        defaults = {
+                            'layer_type': 'BL',
+                            'protocol': 'OSM-watercolor',
                             'source': '',
                             'layer_info': '',
                             'layers': ''
