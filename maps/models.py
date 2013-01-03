@@ -57,6 +57,7 @@ class Source(models.Model):
     """
     SERVICE_TYPES = (
         ('ArcGISServer', 'ArcGISServer'),
+        ('Bing-satellite','Bing satellite'),
         ('OSM-standard', 'OpenStreetMap standard'),
         ('OSM-cyclemap', 'OpenStreetMap cyclemap'),
         ('OSM-mapquest', 'OpenStreetMap mapquest')

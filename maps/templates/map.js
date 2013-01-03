@@ -33,6 +33,15 @@ gnt.maps.create_map = function (map_div, callback_function) {
         layer = new OpenLayers.Layer.OSM('OSM-standard');
         gnt.maps.layers.push(layer);
         {% endif %}
+
+        {% if layer.protocol == 'Bing-satellite' %}
+        layer = new OpenLayers.Layer.Bing({
+                                        name: "Satellite",
+                                        type: "AerialWithLabels",
+                                        key: "AjB69asvfCy_FaIvDNBzCFc2eJdF7m7_bA7-M-xpJKctrxjmYQjqYX5DRCH0sd3J",
+                                        culture: "en"});
+        gnt.maps.layers.push(layer);
+        {% endif %}
         
         {% if layer.protocol == 'OSM-cyclemap' %}
         layer = new OpenLayers.Layer.OSM('OSM-cyclemap',
