@@ -17,6 +17,7 @@ class Layer(models.Model):
     PROTOCOLS = (
         ('ArcGISCache','ArcGIS Cache'),
         ('ArcGISREST','ArcGISRest'),
+        ('Bing-satellite','Bing satellite'),
         ('OSM-standard', 'OSM standard'),
         ('OSM-cyclemap', 'OSM cyclemap'),
         ('OSM-mapquest', 'OSM mapquest')
@@ -202,6 +203,19 @@ class Source(models.Model):
                         defaults = {
                             'layer_type': 'BL',
                             'protocol': 'OSM-mapquest',
+                            'source': '',
+                            'layer_info': '',
+                            'layers': ''
+                        })
+        elif self.service_type == 'Bing-satellite':
+            # create layers for OpenStreetMap styles
+            
+            #osm standard
+            layer, created = Layer.objects.get_or_create(
+                        name = "bing-satellite",
+                        defaults = {
+                            'layer_type': 'BL',
+                            'protocol': 'Bing-satellite',
                             'source': '',
                             'layer_info': '',
                             'layers': ''
