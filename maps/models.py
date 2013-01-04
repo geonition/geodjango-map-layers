@@ -17,6 +17,7 @@ class Layer(models.Model):
     PROTOCOLS = (
         ('ArcGISCache','ArcGIS Cache'),
         ('ArcGISREST','ArcGISRest'),
+        ('Bing-satellite','Bing satellite'),
         ('OSM-standard', 'OSM standard'),
         ('OSM-cyclemap', 'OSM cyclemap'),
         ('OSM-watercolor', 'OSM watercolor'),
@@ -57,6 +58,7 @@ class Source(models.Model):
     """
     SERVICE_TYPES = (
         ('ArcGISServer', 'ArcGISServer'),
+        ('Bing-satellite','Bing satellite'),
         ('OSM-standard', 'OpenStreetMap standard'),
         ('OSM-cyclemap', 'OpenStreetMap cyclemap'),
         ('OSM-watercolor', 'OpenStreetMap Stamen watercolor'),
@@ -209,7 +211,6 @@ class Source(models.Model):
                             'layers': ''
                         })
         
-        
         elif self.service_type == 'OSM-watercolor':
             # create layers for OpenStreetMap styles
             
@@ -219,6 +220,16 @@ class Source(models.Model):
                         defaults = {
                             'layer_type': 'BL',
                             'protocol': 'OSM-watercolor',
+                            'source': '',
+                            'layer_info': '',
+                            'layers': ''
+                        })
+        elif self.service_type == 'Bing-satellite':
+            layer, created = Layer.objects.get_or_create(
+                        name = "bing-satellite",
+                        defaults = {
+                            'layer_type': 'BL',
+                            'protocol': 'Bing-satellite',
                             'source': '',
                             'layer_info': '',
                             'layers': ''

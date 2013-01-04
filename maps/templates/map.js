@@ -33,6 +33,15 @@ gnt.maps.create_map = function (map_div, callback_function) {
         layer = new OpenLayers.Layer.OSM('OSM-standard');
         gnt.maps.layers.push(layer);
         {% endif %}
+
+        {% if layer.protocol == 'Bing-satellite' %}
+        layer = new OpenLayers.Layer.Bing({
+                                        name: "Satellite",
+                                        type: "AerialWithLabels",
+                                        key: "AjB69asvfCy_FaIvDNBzCFc2eJdF7m7_bA7-M-xpJKctrxjmYQjqYX5DRCH0sd3J",
+                                        culture: "en"});
+        gnt.maps.layers.push(layer);
+        {% endif %}
         
         {% if layer.protocol == 'OSM-cyclemap' %}
         layer = new OpenLayers.Layer.OSM('OSM-cyclemap',
@@ -93,11 +102,26 @@ gnt.maps.create_map = function (map_div, callback_function) {
         );
         gnt.maps.layers.push(layer);
         {% endif %}
-        
+        if(map_options_created === false) {
+            mapOptions = {
+                projection: "EPSG:{{ map_data.projection }}",
+                maxExtent: new OpenLayers.Bounds({{ map_data.max_extent }}),
+                units: "m",
+                maxResolution: {{ map_data.max_resolution }},
+                //maxResolution: 19.109257068634033,
+                //maxResolution: 156543.0339,
+                //minResolution: 2.388657133579254,
+                zoom: {{ map_data.zoom_level }},
+                numZoomLevels: 15,
+                tileSize: new OpenLayers.Size({{ map_data.tile_size }})
+            };
+        }
     {% endfor %}
     
     //make sure mapOptions controls are set correct
     mapOptions.controls = [new OpenLayers.Control.Navigation(),
+                        new OpenLayers.Control.Attribution(),
+                           new OpenLayers.Control.Zoom()];
                            new OpenLayers.Control.Zoom(),
                            new OpenLayers.Control.Attribution()];
     
