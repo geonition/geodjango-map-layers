@@ -5,6 +5,8 @@ from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 from urllib2 import urlopen
 from django.utils import simplejson as json
+from PIL import Image
+from cStringIO import StringIO
 
 _ = translation.ugettext
 
@@ -18,6 +20,7 @@ class Layer(models.Model):
         ('ArcGISCache','ArcGIS Cache'),
         ('ArcGISREST','ArcGISRest'),
         ('Bing-satellite','Bing satellite'),
+        ('Imagefile','Imagefile'),
         ('OSM-standard', 'OSM standard'),
         ('OSM-cyclemap', 'OSM cyclemap'),
         ('OSM-watercolor', 'OSM watercolor'),
@@ -59,6 +62,7 @@ class Source(models.Model):
     SERVICE_TYPES = (
         ('ArcGISServer', 'ArcGISServer'),
         ('Bing-satellite','Bing satellite'),
+        ('Imagefile','Imagefile'),
         ('OSM-standard', 'OpenStreetMap standard'),
         ('OSM-cyclemap', 'OpenStreetMap cyclemap'),
         ('OSM-watercolor', 'OpenStreetMap Stamen watercolor'),
@@ -71,7 +75,7 @@ class Source(models.Model):
     )
     source = models.URLField(verify_exists = True,
                              blank = True,
-                             help_text = _('For ArcGIS Servers give as source the service url that end with /rest/services. For OSM services leave this field blank.'))
+                             help_text = _('For ArcGIS Servers give as source the service url that end with /rest/services. \nFor OSM services leave this field blank.\n For Imagefile, add the full url to the image.'))
     
     def parse_arcgis_services(self, url, folder=''):
         """
@@ -232,6 +236,22 @@ class Source(models.Model):
                             'protocol': 'Bing-satellite',
                             'source': '',
                             'layer_info': '',
+                            'layers': ''
+                        })
+            
+        elif self.service_type == 'Imagefile':
+            img_file = urlopen(self.source)
+            im = StringIO(img_file.read())
+            width, height = Image.open(im).size
+            w, h = str(width), str(height)
+            #json_info = '{ "bounds" : "[ 0,0,'+w+','+h+']", "size" : "'+w+','+h+'" ]}'
+            layer, created = Layer.objects.get_or_create(
+                        name = "image",
+                        defaults = {
+                            'layer_type': 'BL',
+                            'protocol': 'Imagefile',
+                            'source': self.source,
+                            'layer_info': w+','+h,
                             'layers': ''
                         })
             

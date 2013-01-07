@@ -42,6 +42,16 @@ gnt.maps.create_map = function (map_div, callback_function) {
                                         culture: "en"});
         gnt.maps.layers.push(layer);
         {% endif %}
+        {% if layer.protocol == 'Imagefile' %}
+        size = "{{layer.layer_info}}".split(',');
+        layer = new OpenLayers.Layer.Image(
+                        'Imagemap',
+                        "{{ layer.source }}",
+                        new OpenLayers.Bounds(0,0,size[0],size[1]),
+                        new OpenLayers.Size(size[0], size[1]),
+                        {numZoomLevels: 3});
+        gnt.maps.layers.push(layer);
+        {% endif %}
         
         {% if layer.protocol == 'OSM-cyclemap' %}
         layer = new OpenLayers.Layer.OSM('OSM-cyclemap',
