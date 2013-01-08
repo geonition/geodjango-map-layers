@@ -114,18 +114,30 @@ gnt.maps.create_map = function (map_div, callback_function) {
         {% endif %}
         if(map_options_created === false) {
             mapOptions = {
-                projection: "EPSG:{{ map_data.projection }}",
+                projection: "EPSG:{{ map_data.projection }}", // is this required?
+                matrixSet: "EPSG:{{ map_data.projection }}",
                 maxExtent: new OpenLayers.Bounds({{ map_data.max_extent }}),
                 units: "m",
                 maxResolution: {{ map_data.max_resolution }},
-                //maxResolution: 19.109257068634033,
-                //maxResolution: 156543.0339,
-                //minResolution: 2.388657133579254,
+                format: "image/png",
                 zoom: {{ map_data.zoom_level }},
                 numZoomLevels: 15,
+                style : "_null",
                 tileSize: new OpenLayers.Size({{ map_data.tile_size }})
             };
         }
+        {% if layer.protocol == 'WMTS' %}
+        var matrixIds = new Array(16);
+            for (var i=0; i<16; ++i) {
+                matrixIds[i] = "EPSG:{{ map_data.projection }}:" + i;
+        }
+
+        mapOptions.url = "{{ layer.source }}";
+        mapOptions.layer = "{{ layer.name }}";
+        mapOptions.matrixIds = matrixIds;
+        layer = new OpenLayers.Layer.WMTS(mapOptions);
+        gnt.maps.layers.push(layer);
+        {% endif %}
     {% endfor %}
     
     //make sure mapOptions controls are set correct

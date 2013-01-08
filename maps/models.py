@@ -7,6 +7,7 @@ from urllib2 import urlopen
 from django.utils import simplejson as json
 from PIL import Image
 from cStringIO import StringIO
+from lxml import etree as ET
 
 _ = translation.ugettext
 
@@ -21,6 +22,7 @@ class Layer(models.Model):
         ('ArcGISREST','ArcGISRest'),
         ('Bing-satellite','Bing satellite'),
         ('Imagefile','Imagefile'),
+        ('WMTS','WMTS'),
         ('OSM-standard', 'OSM standard'),
         ('OSM-cyclemap', 'OSM cyclemap'),
         ('OSM-watercolor', 'OSM watercolor'),
@@ -63,6 +65,7 @@ class Source(models.Model):
         ('ArcGISServer', 'ArcGISServer'),
         ('Bing-satellite','Bing satellite'),
         ('Imagefile','Imagefile'),
+        ('WMTS','WMTS'),
         ('OSM-standard', 'OpenStreetMap standard'),
         ('OSM-cyclemap', 'OpenStreetMap cyclemap'),
         ('OSM-watercolor', 'OpenStreetMap Stamen watercolor'),
@@ -73,9 +76,32 @@ class Source(models.Model):
         max_length = 100,
         choices = SERVICE_TYPES
     )
-    source = models.URLField(verify_exists = True,
-                             blank = True,
-                             help_text = _('For ArcGIS Servers give as source the service url that end with /rest/services. \nFor OSM services leave this field blank.\n For Imagefile, add the full url to the image.'))
+    source = models.URLField(blank = True,
+                             help_text = _('For ArcGIS Servers give as source the service url that end with /rest/services. \nFor OSM services leave this field blank.\n For Imagefile, add the full url to the image.\n For WMTS services the url should end with service/wmts.'))
+
+    def parse_wmts_services(self, url):
+        parser = ET.XMLParser(ns_clean=True)
+        tree   = ET.parse(url + '?REQUEST=GetCapabilities', parser)
+        #info = ET.fromstring(urlopen('%s%s' % (url, '?REQUEST=GetCapabilities')).read())
+        info = tree.getroot()
+        xpath = '{*}Title'
+        layernames = []
+        for elem in info.iter(xpath):#/Contents/Layer/Title'):
+            layernames.append(elem.text)
+        print layernames
+
+        for layername in layernames:
+            layer, created = Layer.objects.get_or_create(
+                        name = layername,
+                        defaults = {
+                            'layer_type': 'BL',
+                            'protocol': 'WMTS',
+                            'source': url,
+                            'layer_info': '',
+                            'layers': ''
+                        })
+
+
     
     def parse_arcgis_services(self, url, folder=''):
         """
@@ -171,6 +197,10 @@ class Source(models.Model):
         if self.service_type == 'ArcGISServer':
             
             self.parse_arcgis_services(self.source)
+
+        elif self.service_type == 'WMTS':
+            
+            self.parse_wmts_services(self.source)
         
         elif self.service_type == 'OSM-standard':
             # create layers for OpenStreetMap styles
