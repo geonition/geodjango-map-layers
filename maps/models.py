@@ -81,14 +81,10 @@ class Source(models.Model):
 
     def parse_wmts_services(self, url):
         parser = ET.XMLParser(ns_clean=True)
-        tree   = ET.parse(url + '?REQUEST=GetCapabilities', parser)
-        #info = ET.fromstring(urlopen('%s%s' % (url, '?REQUEST=GetCapabilities')).read())
-        info = tree.getroot()
-        xpath = '{*}Title'
+        info = ET.parse(url + '?REQUEST=GetCapabilities', parser).getroot()
         layernames = []
-        for elem in info.iter(xpath):#/Contents/Layer/Title'):
+        for elem in info.iter('{*}Title'):
             layernames.append(elem.text)
-        print layernames
 
         for layername in layernames:
             layer, created = Layer.objects.get_or_create(
