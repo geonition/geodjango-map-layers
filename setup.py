@@ -15,6 +15,6 @@ setup(
         },
     zip_safe=False,
     install_requires=[
-       'django'
+       'django','lxml'
     ]
 )
