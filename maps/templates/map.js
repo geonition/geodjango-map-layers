@@ -142,7 +142,10 @@ gnt.maps.create_map = function (map_div, callback_function) {
         {% if layer.protocol == 'WMS' %}
         layer = new OpenLayers.Layer.WMS( "OpenLayers WMS",
                     "{{ layer.source}}",
-                    {layers: "{{ layer.name }}"});
+                    {layers: "{{ layer.name }}"},
+                    {singleTile: true,
+                        buffer: 5});
+                    
         gnt.maps.layers.push(layer);
         {% endif %}
     {% endfor %}
