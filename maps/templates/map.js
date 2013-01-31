@@ -138,6 +138,12 @@ gnt.maps.create_map = function (map_div, callback_function) {
         layer = new OpenLayers.Layer.WMTS(mapOptions);
         gnt.maps.layers.push(layer);
         {% endif %}
+        {% if layer.protocol == 'WMS' %}
+        layer = new OpenLayers.Layer.WMS( "OpenLayers WMS",
+                    "{{ layer.source}}",
+                    {layers: "{{ layer.name }}"});
+        gnt.maps.layers.push(layer);
+        {% endif %}
     {% endfor %}
     
     //make sure mapOptions controls are set correct

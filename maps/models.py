@@ -23,6 +23,7 @@ class Layer(models.Model):
         ('Bing-satellite','Bing satellite'),
         ('Imagefile','Imagefile'),
         ('WMTS','WMTS'),
+        ('WMS','WMS'),
         ('OSM-standard', 'OSM standard'),
         ('OSM-cyclemap', 'OSM cyclemap'),
         ('OSM-watercolor', 'OSM watercolor'),
@@ -66,6 +67,7 @@ class Source(models.Model):
         ('Bing-satellite','Bing satellite'),
         ('Imagefile','Imagefile'),
         ('WMTS','WMTS'),
+        ('WMS','WMS'),
         ('OSM-standard', 'OpenStreetMap standard'),
         ('OSM-cyclemap', 'OpenStreetMap cyclemap'),
         ('OSM-watercolor', 'OpenStreetMap Stamen watercolor'),
@@ -92,6 +94,25 @@ class Source(models.Model):
                         defaults = {
                             'layer_type': 'BL',
                             'protocol': 'WMTS',
+                            'source': url,
+                            'layer_info': '',
+                            'layers': ''
+                        })
+
+    def parse_wms_services(self, url):
+        parser = ET.XMLParser(ns_clean=True)
+        
+        info = ET.parse(url + '?service=WMS&version=1.1.0&request=GetCapabilities', parser).getroot()
+        layernames = []
+        for elem in info.iter('Name'):
+            layernames.append(elem.text) #not all of these are useful layers
+
+        for layername in layernames:
+            layer, created = Layer.objects.get_or_create(
+                        name = layername,
+                        defaults = {
+                            'layer_type': 'BL',
+                            'protocol': 'WMS',
                             'source': url,
                             'layer_info': '',
                             'layers': ''
@@ -197,6 +218,10 @@ class Source(models.Model):
         elif self.service_type == 'WMTS':
             
             self.parse_wmts_services(self.source)
+        
+        elif self.service_type == 'WMS':
+            
+            self.parse_wms_services(self.source)
         
         elif self.service_type == 'OSM-standard':
             # create layers for OpenStreetMap styles
