@@ -100,6 +100,7 @@ gnt.maps.create_map = function (map_div, callback_function) {
             projection: layer.projection,
             restrictedExtent: layer.maxExtent
         };
+        map_options_created = true;
         {% endif %}
         
     
