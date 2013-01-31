@@ -139,12 +139,9 @@ gnt.maps.create_map = function (map_div, callback_function) {
         layer = new OpenLayers.Layer.WMTS(mapOptions);
         gnt.maps.layers.push(layer);
         {% endif %}
+
         {% if layer.protocol == 'WMS' %}
-        var urlArray = [
-            "http://wms1.map.mapita.fi/knummi/wms",
-            "http://wms2.map.mapita.fi/knummi/wms",
-            "http://wms3.map.mapita.fi/knummi/wms",
-            "http://wms4.map.mapita.fi/knummi/wms"];
+        var urlArray = {{layer.source|safe}};
             
         layer = new OpenLayers.Layer.WMS( "OpenLayers WMS",
                     urlArray,

@@ -100,9 +100,12 @@ class Source(models.Model):
                         })
 
     def parse_wms_services(self, url):
+        # example url input: http://wms1.map.mapita.fi/knummi/wms,http://wms2.map.mapita.fi/knummi/wms
+        # spaces are not allowed in a URLField
         parser = ET.XMLParser(ns_clean=True)
-        
-        info = ET.parse(url + '?service=WMS&version=1.1.0&request=GetCapabilities', parser).getroot()
+        urls = [u.strip() for u in url.split(',')]
+        info = ET.parse(urls[0] + '?service=WMS&version=1.1.0&request=GetCapabilities', parser).getroot()
+        urls = ['\"'+u+'\"' for u in urls]
         layernames = []
         for elem in info.iter('Name'):
             layernames.append(elem.text) #not all of these are useful layers
@@ -113,7 +116,7 @@ class Source(models.Model):
                         defaults = {
                             'layer_type': 'BL',
                             'protocol': 'WMS',
-                            'source': url,
+                            'source': '[' + ', '.join(urls) + ']',
                             'layer_info': '',
                             'layers': ''
                         })
