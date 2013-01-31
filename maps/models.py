@@ -83,7 +83,9 @@ class Source(models.Model):
 
     def parse_wmts_services(self, url):
         parser = ET.XMLParser(ns_clean=True)
-        info = ET.parse(url + '?REQUEST=GetCapabilities', parser).getroot()
+        urls = [u.strip() for u in url.split(',')]
+        info = ET.parse(urls[0] + '?REQUEST=GetCapabilities', parser).getroot()
+        urls = ['\"'+u+'\"' for u in urls]
         layernames = []
         for elem in info.iter('{*}Title'):
             layernames.append(elem.text)
@@ -94,7 +96,7 @@ class Source(models.Model):
                         defaults = {
                             'layer_type': 'BL',
                             'protocol': 'WMTS',
-                            'source': url,
+                            'source': '[' + ', '.join(urls) + ']',
                             'layer_info': '',
                             'layers': ''
                         })
