@@ -133,7 +133,7 @@ gnt.maps.create_map = function (map_div, callback_function) {
                 matrixIds[i] = "EPSG:{{ map_data.projection }}:" + i;
         }
 
-        mapOptions.url = {{ layer.source }};
+        mapOptions.url = {{ layer.source|safe }};
         mapOptions.layer = "{{ layer.name }}";
         mapOptions.matrixIds = matrixIds;
         layer = new OpenLayers.Layer.WMTS(mapOptions);
