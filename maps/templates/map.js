@@ -115,11 +115,11 @@ gnt.maps.create_map = function (map_div, callback_function) {
         {% endif %}
         if(map_options_created === false) {
             mapOptions = {
-                projection: "EPSG:{{ map_data.projection }}", // is this required?
+                projection: new OpenLayers.Projection("EPSG:{{ map_data.projection }}"),
                 matrixSet: "EPSG:{{ map_data.projection }}",
                 maxExtent: new OpenLayers.Bounds({{ map_data.max_extent }}),
                 units: "m",
-                maxResolution: {{ map_data.max_resolution }},
+                maxResolution: {{ map_data.max_resolution|stringformat:"f" }},
                 format: "image/png",
                 zoom: {{ map_data.zoom_level }},
                 numZoomLevels: 15,

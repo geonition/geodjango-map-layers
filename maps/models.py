@@ -332,7 +332,7 @@ class Map(models.Model):
                                   default = getattr(settings,
                                                     'SPATIAL_REFERENCE_SYSTEM_ID',
                                                     4326))
-    max_resolution = models.IntegerField(default = 50,
+    max_resolution = models.FloatField(default = 50.0,
                                          blank = True,
                                          null = True)
     max_extent = models.CharField(max_length = 750,
