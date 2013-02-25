@@ -135,6 +135,10 @@ gnt.maps.create_map = function (map_div, callback_function) {
 
         mapOptions.url = {{ layer.source|safe }};
         mapOptions.layer = "{{ layer.name }}";
+        mapOptions.name = "{{ layer.name }}";
+        {% if layer.layer_type == 'OL' %}
+        mapOptions.isBaseLayer = false;
+        {% endif %}
         mapOptions.matrixIds = matrixIds;
         layer = new OpenLayers.Layer.WMTS(mapOptions);
         gnt.maps.layers.push(layer);

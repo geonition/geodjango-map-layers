@@ -35,7 +35,8 @@ class Layer(models.Model):
                                  editable = False)
     name = models.CharField(max_length = 100)
     layer_type = models.CharField(max_length = 5,
-                                  choices = LAYER_TYPES)
+                                  choices = LAYER_TYPES,
+                                  help_text = _('Use base layer for basemaps. There can be only one visible base layer. Overlays are drawn over the basemap, there can be a multiple overlay layers.'))
     protocol = models.CharField(max_length = 20,
                                 choices = PROTOCOLS)
     source = models.URLField(blank = True)
