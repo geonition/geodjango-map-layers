@@ -84,7 +84,7 @@ class Source(models.Model):
     def parse_wmts_services(self, url):
         parser = ET.XMLParser(ns_clean=True)
         urls = [u.strip() for u in url.split(',')]
-        info = ET.parse(urls[0] + '?REQUEST=GetCapabilities', parser).getroot()
+        info = ET.parse(urls[0].replace('https','http') + '?REQUEST=GetCapabilities', parser).getroot()
         urls = ['\"'+u+'\"' for u in urls]
         layernames = []
         for elem in info.iter('{*}Title'):
