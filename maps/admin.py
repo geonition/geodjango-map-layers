@@ -20,7 +20,7 @@ class LayerAdmin(admin.ModelAdmin):
               'source',
               'layer_info')
     readonly_fields = ('name',
-                       'layer_type',
+#                       'layer_type',
                        'protocol',
                        'source',
                        'layer_info')
