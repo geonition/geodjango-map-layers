@@ -16,7 +16,7 @@ class Layer(models.Model):
         ('BL','Base Layer'),
         ('OL','Overlay'),
     )
-    
+
     PROTOCOLS = (
         ('ArcGISCache','ArcGIS Cache'),
         ('ArcGISREST','ArcGISRest'),
@@ -27,9 +27,13 @@ class Layer(models.Model):
         ('OSM-standard', 'OSM standard'),
         ('OSM-cyclemap', 'OSM cyclemap'),
         ('OSM-watercolor', 'OSM watercolor'),
-        ('OSM-mapquest', 'OSM mapquest')
+        ('OSM-mapquest', 'OSM mapquest'),
+        ('Google-satellite', 'Google satellite'),
+        ('Google-hybrid', 'Google hybrid'),
+        ('Google-road', 'Google road'),
+        ('Google-terrain', 'Google terrain'),
     )
-    
+
     slug_name = models.SlugField(max_length = 100,
                                  primary_key = True,
                                  editable = False)
@@ -44,23 +48,23 @@ class Layer(models.Model):
                                   blank = True)
     layers = models.CharField(max_length = 300,
                               blank = True)
-    
+
     def save(self, *args, **kwargs):
         self.slug_name = slugify(self.name).replace('_', '-') #undescores are a problem in admin view on site
         super(Layer, self).save(*args, **kwargs)
-        
-        
+
+
     def get_absolute_url(self):
         return reverse('layer_preview', kwargs={'layer_slug_name': self.slug_name})
-        
+
     def __unicode__(self):
         return self.name
-    
+
 
 class Source(models.Model):
     """
     This model represents a source for services.
-    
+
     Supports at the moment ArcGISServer
     """
     SERVICE_TYPES = (
@@ -72,9 +76,13 @@ class Source(models.Model):
         ('OSM-standard', 'OpenStreetMap standard'),
         ('OSM-cyclemap', 'OpenStreetMap cyclemap'),
         ('OSM-watercolor', 'OpenStreetMap Stamen watercolor'),
-        ('OSM-mapquest', 'OpenStreetMap mapquest')
+        ('OSM-mapquest', 'OpenStreetMap mapquest'),
+        ('Google-satellite', 'Google satellite'),
+        ('Google-hybrid', 'Google hybrid'),
+        ('Google-road', 'Google road'),
+        ('Google-terrain', 'Google terrain'),
     )
-    
+
     service_type = models.CharField(
         max_length = 100,
         choices = SERVICE_TYPES
@@ -125,7 +133,7 @@ class Source(models.Model):
                         })
 
 
-    
+
     def parse_arcgis_services(self, url, folder=''):
         """
         This function parses arcGIS services from the given url
@@ -133,19 +141,19 @@ class Source(models.Model):
         """
         info = json.loads(urlopen('%s%s%s' % (url, folder, '?f=json')).read())
         services = info['services']
-        
+
         for service in services:
-            
+
             #parse the services provided and add to layers
             if service['type'] == 'MapServer':
-            
+
                 #MapServers
                 mapurl = '%s/%s/MapServer?f=json' % (url, service['name'])
-                
+
                 mapserver_info = json.loads(urlopen(mapurl).read())
                 if mapserver_info.has_key('error'):
                     continue
-            
+
                 #ArcGIS cache layer
                 if mapserver_info['singleFusedMapCache']:
                     layer, created = Layer.objects.get_or_create(
@@ -165,7 +173,7 @@ class Source(models.Model):
                                 'copyrightText': mapserver_info['copyrightText']
                             })
                         })
-                    
+
                     if not created:
                         layer.layer_type = 'BL'
                         layer.protocol = 'ArcGISCache'
@@ -179,11 +187,11 @@ class Source(models.Model):
                                 'copyrightText': mapserver_info['copyrightText']
                             })
                         layer.save()
-                
+
                 #create one ArcGISRest layer from the service
                 available_layers = [str(al['id']) for al in mapserver_info['layers']]
                 img_format = "png"
-                
+
                 layer, created = Layer.objects.get_or_create(
                     name = "EPSG:%s-arcgisrest-%s-%s" % (mapserver_info['spatialReference']['wkid'],
                                                      service['name'],
@@ -198,7 +206,7 @@ class Source(models.Model):
                             'transparent': True
                         })
                     })
-                
+
                 if not created:
                     layer.layer_type = 'OL'
                     layer.protocol = 'ArcGISREST'
@@ -209,29 +217,29 @@ class Source(models.Model):
                             'transparent': True
                         })
                     layer.save()
-        
+
         #for all folders found do parsing again
         folders = info['folders']
         for folder in folders:
             self.parse_arcgis_services(url, folder='/%s' % folder)
-    
+
     def save(self, *args, **kwargs):
-        
+
         if self.service_type == 'ArcGISServer':
-            
+
             self.parse_arcgis_services(self.source)
 
         elif self.service_type == 'WMTS':
-            
+
             self.parse_wmts_services(self.source)
-        
+
         elif self.service_type == 'WMS':
-            
+
             self.parse_wms_services(self.source)
-        
+
         elif self.service_type == 'OSM-standard':
             # create layers for OpenStreetMap styles
-            
+
             #osm standard
             layer, created = Layer.objects.get_or_create(
                         name = "osm-standard",
@@ -242,10 +250,10 @@ class Source(models.Model):
                             'layer_info': '',
                             'layers': ''
                         })
-        
+
         elif self.service_type == 'OSM-cyclemap':
             # create layers for OpenStreetMap styles
-            
+
             #osm standard
             layer, created = Layer.objects.get_or_create(
                         name = "osm-cyclemap",
@@ -256,11 +264,11 @@ class Source(models.Model):
                             'layer_info': '',
                             'layers': ''
                         })
-        
-        
+
+
         elif self.service_type == 'OSM-mapquest':
             # create layers for OpenStreetMap styles
-            
+
             #osm standard
             layer, created = Layer.objects.get_or_create(
                         name = "osm-mapquest",
@@ -271,10 +279,10 @@ class Source(models.Model):
                             'layer_info': '',
                             'layers': ''
                         })
-        
+
         elif self.service_type == 'OSM-watercolor':
             # create layers for OpenStreetMap styles
-            
+
             #osm standard
             layer, created = Layer.objects.get_or_create(
                         name = "osm-watercolor",
@@ -285,6 +293,7 @@ class Source(models.Model):
                             'layer_info': '',
                             'layers': ''
                         })
+
         elif self.service_type == 'Bing-satellite':
             layer, created = Layer.objects.get_or_create(
                         name = "bing-satellite",
@@ -295,7 +304,7 @@ class Source(models.Model):
                             'layer_info': '',
                             'layers': ''
                         })
-            
+
         elif self.service_type == 'Imagefile':
             img_file = urlopen(self.source)
             im = StringIO(img_file.read())
@@ -311,11 +320,53 @@ class Source(models.Model):
                             'layer_info': w+','+h,
                             'layers': ''
                         })
-            
-            
-            
+
+        elif self.service_type == 'Google-satellite':
+            layer, created = Layer.objects.get_or_create(
+                        name = "google-satellite",
+                        defaults = {
+                            'layer_type': 'BL',
+                            'protocol': 'Google-satellite',
+                            'source': '',
+                            'layer_info': '',
+                            'layers': ''
+                        })
+
+        elif self.service_type == 'Google-hybrid':
+            layer, created = Layer.objects.get_or_create(
+                        name = "google-hybrid",
+                        defaults = {
+                            'layer_type': 'BL',
+                            'protocol': 'Google-hybrid',
+                            'source': '',
+                            'layer_info': '',
+                            'layers': ''
+                        })
+
+        elif self.service_type == 'Google-road':
+            layer, created = Layer.objects.get_or_create(
+                        name = "google-road",
+                        defaults = {
+                            'layer_type': 'BL',
+                            'protocol': 'Google-road',
+                            'source': '',
+                            'layer_info': '',
+                            'layers': ''
+                        })
+
+        elif self.service_type == 'Google-terrain':
+            layer, created = Layer.objects.get_or_create(
+                        name = "google-terrain",
+                        defaults = {
+                            'layer_type': 'BL',
+                            'protocol': 'Google-terrain',
+                            'source': '',
+                            'layer_info': '',
+                            'layers': ''
+                        })
+
         super(Source, self).save(*args, **kwargs)
-        
+
     def __unicode__(self):
         return '%s %s' % (self.service_type, self.source)
 
@@ -343,14 +394,14 @@ class Map(models.Model):
     tile_size = models.CharField(max_length = 15,
                                  default = '256,256')
     layers = models.ManyToManyField(Layer)
-    
+
     def save(self, *args, **kwargs):
         self.slug_name = slugify(self.name)
         super(Map, self).save(*args, **kwargs)
-        
+
     def get_absolute_url(self):
         return reverse('map_preview', kwargs={'map_slug_name': self.slug_name})
-        
+
     def __unicode__(self):
         return self.name
 

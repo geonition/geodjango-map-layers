@@ -1,7 +1,7 @@
 
 /*
  Maps namespace
- 
+
  gnt.maps
 */
 gnt.maps = {};
@@ -11,6 +11,23 @@ var map = undefined;
 gnt.maps.layer = undefined;
 gnt.maps.layers = [];
 
+{% if map_data.google_key %}
+/*
+ * This function injects google maps API to document
+ */
+gnt.maps.GoogleLoaded = false;
+gnt.maps.loadGoogleMaps = function() {
+  var script = document.createElement("script");
+  script.type = "text/javascript";
+  script.src = "https://maps.googleapis.com/maps/api/js?key={{ map_data.google_key }}&sensor=false&language={{ LANGUAGE_CODE }}&callback=gnt.maps.create_google";
+  document.body.appendChild(script);
+};
+
+gnt.maps.create_google = function() {
+    gnt.maps.GoogleLoaded = true;
+    gnt.maps.create_map(gnt.maps.map_div, gnt.maps.callback_function);
+};
+{% endif %}
 
 /*
 This function creates the map and layers.
@@ -24,16 +41,55 @@ callback_function -- callback function the to be called after creation
     The callback_function will get the map as a parameter
 */
 gnt.maps.create_map = function (map_div, callback_function) {
+    {% if map_data.google_key %}
+    if(!gnt.maps.GoogleLoaded) {
+        gnt.maps.map_div = map_div;
+        gnt.maps.callback_function = callback_function;
+        gnt.maps.loadGoogleMaps()
+        return;
+    }
+    {% endif %}
+
     var mapOptions = {};
     var map_options_created = false;
-    
+
     {% for layer in layer_data %}
-        
+
         {% if layer.protocol == 'OSM-standard' %}
         layer = new OpenLayers.Layer.OSM('OSM-standard');
         gnt.maps.layers.push(layer);
         {% endif %}
 
+
+        {% if layer.protocol == 'Google-satellite' %}
+        layer = new OpenLayers.Layer.Google('Satellite', {
+                                        type: google.maps.MapTypeId.SATELLITE,
+                                        numZoomLevels: 22
+                                        });
+        gnt.maps.layers.push(layer);
+        {% endif %}
+
+        {% if layer.protocol == 'Google-hybrid' %}
+        layer = new OpenLayers.Layer.Google('Hybrid', {
+                                        type: google.maps.MapTypeId.HYBRID,
+                                        numZoomLevels: 22
+                                        });
+        gnt.maps.layers.push(layer);
+        {% endif %}
+
+        {% if layer.protocol == 'Google-road' %}
+        layer = new OpenLayers.Layer.Google('Road', {
+                                        type: google.maps.MapTypeId.ROAD
+                                        });
+        gnt.maps.layers.push(layer);
+        {% endif %}
+
+        {% if layer.protocol == 'Google-terrain' %}
+        layer = new OpenLayers.Layer.Google('Terrain', {
+                                        type: google.maps.MapTypeId.TERRAIN
+                                        });
+        gnt.maps.layers.push(layer);
+        {% endif %}
         {% if layer.protocol == 'Bing-satellite' %}
         layer = new OpenLayers.Layer.Bing({
                                         name: "Satellite",
@@ -52,7 +108,7 @@ gnt.maps.create_map = function (map_div, callback_function) {
                         {numZoomLevels: 3});
         gnt.maps.layers.push(layer);
         {% endif %}
-        
+
         {% if layer.protocol == 'OSM-cyclemap' %}
         layer = new OpenLayers.Layer.OSM('OSM-cyclemap',
             ["http://a.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png",
@@ -60,7 +116,7 @@ gnt.maps.create_map = function (map_div, callback_function) {
             "http://c.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png"]);
         gnt.maps.layers.push(layer);
         {% endif%}
-        
+
         {% if layer.protocol == 'OSM-mapquest' %}
         layer = new OpenLayers.Layer.OSM('OSM-mapquest',
             ["http://otile1.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.jpg",
@@ -69,7 +125,7 @@ gnt.maps.create_map = function (map_div, callback_function) {
              "http://otile4.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.jpg"]);
         gnt.maps.layers.push(layer);
         {% endif %}
-    
+
         {% if layer.protocol == 'OSM-watercolor' %}
         layer = new OpenLayers.Layer.OSM('OSM-watercolor',
             ["http://a.tile.stamen.com/watercolor/${z}/${x}/${y}.jpg",
@@ -78,9 +134,9 @@ gnt.maps.create_map = function (map_div, callback_function) {
              "http://d.tile.stamen.com/watercolor/${z}/${x}/${y}.jpg"]);
         gnt.maps.layers.push(layer);
         {% endif %}
-        
+
         {% if layer.protocol == 'ArcGISCache' %}
-        var layer_info = {{ layer.layer_info|safe }}; 
+        var layer_info = {{ layer.layer_info|safe }};
         layer = new OpenLayers.Layer.ArcGISCache(
                     "{{ layer.name }}",
                     "{{ layer.source }}",
@@ -90,7 +146,7 @@ gnt.maps.create_map = function (map_div, callback_function) {
                     }
                 );
         gnt.maps.layers.push(layer);
-        
+
         mapOptions = {
             maxExtent: layer.maxExtent,
             units: layer.units,
@@ -102,14 +158,14 @@ gnt.maps.create_map = function (map_div, callback_function) {
         };
         map_options_created = true;
         {% endif %}
-        
-    
+
+
         {% if layer.protocol == 'ArcGISREST' %}
         layer = new OpenLayers.Layer.ArcGIS93Rest(
             "{{ layer.name }}",
             "{{ layer.source }}",
             {{ layer.layer_info|safe }},
-            {isBaseLayer: false}        
+            {isBaseLayer: false}
         );
         gnt.maps.layers.push(layer);
         {% endif %}
@@ -146,26 +202,26 @@ gnt.maps.create_map = function (map_div, callback_function) {
 
         {% if layer.protocol == 'WMS' %}
         var urlArray = {{layer.source|safe}};
-            
+
         layer = new OpenLayers.Layer.WMS( "OpenLayers WMS",
                     urlArray,
                     {layers: "{{ layer.name }}"});
-                    
+
         gnt.maps.layers.push(layer);
         {% endif %}
     {% endfor %}
-    
+
     //make sure mapOptions controls are set correct
     mapOptions.controls = [new OpenLayers.Control.Navigation(),
                         new OpenLayers.Control.Attribution(),
                            new OpenLayers.Control.Zoom()];
-    
+
     {% if layer_data|length > 1 %}
     mapOptions.controls.push(new OpenLayers.Control.LayerSwitcher())
     {% endif %}
-    
+
     mapOptions['theme'] = null;
-    
+
     map = new OpenLayers.Map(map_div, mapOptions);
     map.addLayers(gnt.maps.layers);
     map.zoomToMaxExtent();
