@@ -44,7 +44,7 @@ def map_js(request, map_slug_name = ''):
     layer_data = map_data.layers.all()
     for layer in layer_data:
         if 'Google' in layer.protocol:
-            map_data.google_key = settings.GOOGLE_API_KEY
+            map_data.google_key = getattr(settings, 'GOOGLE_API_KEY', '')
     return render_to_response('map.js',
                               {'map_data': map_data,
                                'layer_data': layer_data },
@@ -58,7 +58,7 @@ def layer_js(request, layer_slug_name = ''):
     """
     layer_data = Layer.objects.get(slug_name = layer_slug_name)
     if 'Google' in layer_data.protocol:
-        layer_data.key = settings.GOOGLE_API_KEY
+        layer_data.key = getattr(settings, 'GOOGLE_API_KEY', '')
     return render_to_response('layer.js',
                               {'layer_data': layer_data},
                               mimetype = "application/javascript",
