@@ -14,11 +14,30 @@ admin.site.register(Source)
 
 class LayerAdmin(admin.ModelAdmin):
     list_display = ('name', 'source')
-    fields = ('name',
-              'layer_type',
-              'protocol',
-              'source',
-              'layer_info')
+#     fields = ('name',
+#               'layer_type',
+#               'protocol',
+#               'source',
+#               'layer_info')
+    fieldsets = (
+         (None, {
+             'fields': ('name',
+                        'layer_type',
+                        'protocol',
+                        'source',
+                        'layer_info')
+         }),
+         ('Attribution', {
+              'fields': ('attr_title',
+                         'attr_url',
+#                          'attr_logo_url',
+#                          'attr_logo_format',
+#                          ('attr_logo_height', 'attr_logo_width')
+                     ),
+              'classes': ('wide',)  
+              })
+     )
+    
     readonly_fields = ('name',
 #                       'layer_type',
                        'protocol',

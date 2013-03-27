@@ -196,6 +196,7 @@ gnt.maps.create_map = function (map_div, callback_function) {
         mapOptions.isBaseLayer = false;
         {% endif %}
         mapOptions.matrixIds = matrixIds;
+        mapOptions.attribution = '<a target="_blank" href="{{ layer.attr_url}}">{{ layer.attr_title|safe }}</a>'
         layer = new OpenLayers.Layer.WMTS(mapOptions);
         gnt.maps.layers.push(layer);
         {% endif %}
@@ -205,7 +206,9 @@ gnt.maps.create_map = function (map_div, callback_function) {
 
         layer = new OpenLayers.Layer.WMS( "OpenLayers WMS",
                     urlArray,
-                    {layers: "{{ layer.name }}"});
+                    {layers: "{{ layer.name }}",
+                     attribution: '<a target="_blank" href="{{ layer.attr_url}}">{{ layer.attr_title|safe }}</a>'
+                    });
 
         gnt.maps.layers.push(layer);
         {% endif %}

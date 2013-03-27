@@ -48,6 +48,30 @@ class Layer(models.Model):
                                   blank = True)
     layers = models.CharField(max_length = 300,
                               blank = True)
+    
+    #For layer attribution
+    attr_title = models.CharField(max_length = 100,
+                                  blank = True,
+                                  verbose_name = _('attribution text')
+                                  )
+    attr_url = models.URLField(blank = True,
+                               verbose_name = _('attribution link')
+                               )
+    attr_logo_url = models.URLField(blank = True,
+                                    verbose_name = _('logo URL')
+                                    )
+    attr_logo_format = models.CharField(max_length = 30,
+                                        blank = True,
+                                        verbose_name = _('logo content type')
+                                        )
+    attr_logo_height = models.IntegerField(null = True,
+                                           blank = True,
+                                           verbose_name = _('logo image width')
+                                           )
+    attr_logo_width = models.IntegerField(null = True,
+                                          blank = True,
+                                          verbose_name = _('logo image height')
+                                          )
 
     def save(self, *args, **kwargs):
         self.slug_name = slugify(self.name).replace('_', '-') #undescores are a problem in admin view on site
