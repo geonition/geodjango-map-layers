@@ -51,17 +51,17 @@ class Layer(models.Model):
     
     #For layer attribution
     attr_title = models.CharField(max_length = 100,
-                                  blank = True,
+                                  blank = True,default = '',
                                   verbose_name = _('attribution text')
                                   )
-    attr_url = models.URLField(blank = True,
+    attr_url = models.URLField(blank = True,default = '',
                                verbose_name = _('attribution link')
                                )
-    attr_logo_url = models.URLField(blank = True,
+    attr_logo_url = models.URLField(blank = True,default = '',
                                     verbose_name = _('logo URL')
                                     )
     attr_logo_format = models.CharField(max_length = 30,
-                                        blank = True,
+                                        blank = True,default = '',
                                         verbose_name = _('logo content type')
                                         )
     attr_logo_height = models.IntegerField(null = True,
