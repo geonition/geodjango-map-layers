@@ -207,6 +207,9 @@ gnt.maps.create_map = function (map_div, callback_function) {
         layer = new OpenLayers.Layer.WMS( "OpenLayers WMS",
                     urlArray,
                     {layers: "{{ layer.name }}",
+                    {% if layer.layer_type == 'OL' %}
+                       transparent: true,
+                    {% endif %}
                      attribution: '<a target="_blank" href="{{ layer.attr_url}}">{{ layer.attr_title|safe }}</a>'
                     });
 
