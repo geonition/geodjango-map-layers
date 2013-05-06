@@ -79,7 +79,8 @@ gnt.maps.create_map = function (map_div, callback_function) {
 
         {% if layer.protocol == 'Google-road' %}
         layer = new OpenLayers.Layer.Google('Road', {
-                                        type: google.maps.MapTypeId.ROAD
+                                        type: google.maps.MapTypeId.ROAD,
+                                        numZoomLevels: 22
                                         });
         gnt.maps.layers.push(layer);
         {% endif %}
