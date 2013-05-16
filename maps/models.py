@@ -123,8 +123,13 @@ class Source(models.Model):
         info = ET.parse(resp).getroot()
         urls = ['\"'+u+'\"' for u in urls]
         layernames = []
-        for elem in info.iter('{http://www.opengis.net/ows/1.1}Title'):
-            layernames.append(elem.text)
+        #python 2.6 does not have iter method
+        try:
+            for elem in info.iter('{http://www.opengis.net/ows/1.1}Title'):
+                layernames.append(elem.text)
+        except AttributeError:
+            for elem in info.getiterator('{http://www.opengis.net/ows/1.1}Title'):
+                layernames.append(elem.text)
 
         for layername in layernames:
             layer, created = Layer.objects.get_or_create(
