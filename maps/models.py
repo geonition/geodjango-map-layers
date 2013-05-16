@@ -7,7 +7,9 @@ from urllib2 import urlopen
 from django.utils import simplejson as json
 from PIL import Image
 from cStringIO import StringIO
-from lxml import etree as ET
+#from lxml import etree as ET
+from xml.etree import ElementTree as ET
+import urllib2
 
 _ = translation.ugettext
 
@@ -115,12 +117,13 @@ class Source(models.Model):
                              help_text = _('For ArcGIS Servers give as source the service url that end with /rest/services. \nFor OSM services leave this field blank.\n For Imagefile, add the full url to the image.\n For WMTS services the url should end with service/wmts.'))
 
     def parse_wmts_services(self, url):
-        parser = ET.XMLParser(ns_clean=True)
+#        parser = ET.XMLParser(ns_clean=True)
         urls = [u.strip() for u in url.split(',')]
-        info = ET.parse(urls[0].replace('https','http') + '?REQUEST=GetCapabilities', parser).getroot()
+        resp = urllib2.urlopen(urls[0] + '?REQUEST=GetCapabilities')
+        info = ET.parse(resp).getroot()
         urls = ['\"'+u+'\"' for u in urls]
         layernames = []
-        for elem in info.iter('{*}Title'):
+        for elem in info.iter('{http://www.opengis.net/ows/1.1}Title'):
             layernames.append(elem.text)
 
         for layername in layernames:
@@ -137,12 +140,14 @@ class Source(models.Model):
     def parse_wms_services(self, url):
         # example url input: http://wms1.map.mapita.fi/knummi/wms,http://wms2.map.mapita.fi/knummi/wms
         # spaces are not allowed in a URLField
-        parser = ET.XMLParser(ns_clean=True)
+#        parser = ET.XMLParser(ns_clean=True)
         urls = [u.strip() for u in url.split(',')]
-        info = ET.parse(urls[0] + '?service=WMS&version=1.1.0&request=GetCapabilities', parser).getroot()
+        resp = urllib2.urlopen(urls[0] + '?service=WMS&version=1.1.0&request=GetCapabilities')
+        
+        info = ET.parse(resp).getroot()
         urls = ['\"'+u+'\"' for u in urls]
         layernames = []
-        for elem in info.iter('Name'):
+        for elem in info.findall('./Capability/Layer/Layer/Name'):
             layernames.append(elem.text) #not all of these are useful layers
 
         for layername in layernames:
