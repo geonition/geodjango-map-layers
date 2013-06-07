@@ -221,8 +221,7 @@ gnt.maps.create_map = function (map_div, callback_function) {
     //make sure mapOptions controls are set correct
     mapOptions.controls = [new OpenLayers.Control.Navigation(),
                         new OpenLayers.Control.Attribution(),
-                           new OpenLayers.Control.Zoom(),
-                           new OpenLayers.Control.PanPanel()
+                           new OpenLayers.Control.Zoom()
                            ];
 
     {% if layer_data|length > 1 %}
