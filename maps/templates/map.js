@@ -217,6 +217,7 @@ gnt.maps.create_map = function (map_div, callback_function) {
     {% endif %}
 
     mapOptions['theme'] = null;
+    mapOptions['fallThrough'] = true;
 
     map = new OpenLayers.Map(map_div, mapOptions);
     map.addLayers(gnt.maps.layers);
