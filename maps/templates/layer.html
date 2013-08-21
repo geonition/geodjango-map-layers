@@ -1,3 +1,4 @@
+{% load url from future %}
 <html>
 <head>
     <meta charset="utf-8">
@@ -21,6 +22,6 @@
     gnt.maps = {};
 </script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/libs/OpenLayers-gnt.js"></script>
-<script type="text/javascript" src="{% url layer_js layer_slug_name=layer_slug %}"></script>
+<script type="text/javascript" src="{% url 'layer_js' layer_slug_name=layer_slug %}"></script>
 </body>
 </html>
