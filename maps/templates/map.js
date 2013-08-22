@@ -212,9 +212,6 @@ gnt.maps.create_map = function (map_div, callback_function) {
                            new OpenLayers.Control.PanZoom()
                            ];
 
-    {% if layer_data|length > 1 %}
-    mapOptions.controls.push(new OpenLayers.Control.LayerSwitcher())
-    {% endif %}
 
     mapOptions['theme'] = null;
     mapOptions['fallThrough'] = true;
