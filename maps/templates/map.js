@@ -224,3 +224,44 @@ gnt.maps.create_map = function (map_div, callback_function) {
         callback_function(map);
     }
 };
+
+gnt.maps.add_geojson_to_map = function(url, layer_name, style_map){
+    var default_color = "#ff7f0e";
+    var default_style = new OpenLayers.StyleMap({
+                'default': {
+                    label : "${id}",
+                    strokeWidth: 2,
+                    fontSize: "16px",
+                    fontColor: default_color,
+                    strokeColor: default_color,
+                    fillColor: default_color,
+                    fillOpacity: 0.5,
+                    labelOutlineColor: "black",
+                    labelOutlineWidth: 3,
+                    pointRadius: 8,
+                    cursor: 'pointer',
+                    labelAlign: 'tc',
+                    labelXOffset: '10'
+                }   
+            }); 
+    if (typeof style_map === 'undefined'){
+        style_map = default_style;
+    }
+    function removeThirdD(data){
+        for (j=0; j < data.features.length; j++){ // there may be 3D data
+            if (data.features[j]['geometry']['coordinates'].length > 2){
+                data.features[j]['geometry']['coordinates'].pop(2);
+            }
+        }
+        return data;
+    }
+    var geojson_format = new OpenLayers.Format.GeoJSON();
+
+    $.get(url, {}, function(data){
+        var layer = new OpenLayers.Layer.Vector(layer_name,{styleMap: style_map});
+                            
+        layer.addFeatures(geojson_format.read(removeThirdD(data)));
+        map.addLayers([layer]);
+        layer.setVisibility(true);
+    }, 'json'); 
+}
