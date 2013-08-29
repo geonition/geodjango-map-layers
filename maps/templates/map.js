@@ -264,4 +264,4 @@ gnt.maps.add_geojson_to_map = function(url, layer_name, style_map){
         map.addLayers([layer]);
         layer.setVisibility(true);
     }, 'json'); 
-}
+};
