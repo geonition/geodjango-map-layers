@@ -218,7 +218,7 @@ gnt.maps.create_map = function (map_div, callback_function) {
 
     map = new OpenLayers.Map(map_div, mapOptions);
     map.addLayers(gnt.maps.layers);
-    map.zoomToMaxExtent();
+    //map.zoomToMaxExtent(); // why would we do this?
 
     if(callback_function !== undefined) {
         callback_function(map);
