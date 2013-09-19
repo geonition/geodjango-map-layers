@@ -26,8 +26,8 @@ gnt.maps.loadGoogleMaps = function() {
 gnt.maps.create_google = function() {
     gnt.maps.GoogleLoaded = true;
     gnt.maps.create_map(gnt.maps.map_div);
-    if (gnt.questionnaire !== undefined){
-        gnt.questionnaire.after_map_loaded();
+    if (gnt.after_map_loaded !== undefined){
+        gnt.after_map_loaded();
     }
 };
 {% endif %}
