@@ -25,7 +25,10 @@ gnt.maps.loadGoogleMaps = function() {
 
 gnt.maps.create_google = function() {
     gnt.maps.GoogleLoaded = true;
-    gnt.maps.create_map(gnt.maps.map_div, gnt.maps.callback_function);
+    gnt.maps.create_map(gnt.maps.map_div);
+    if (gnt.questionnaire !== undefined){
+        gnt.questionnaire.after_map_loaded();
+    }
 };
 {% endif %}
 
@@ -40,14 +43,13 @@ initial_extent -- initial extent where the map should open
 callback_function -- callback function the to be called after creation
     The callback_function will get the map as a parameter
 */
-gnt.maps.create_map = function (map_div, callback_function) {
+gnt.maps.create_map = function (map_div) {
     var layer;
     {% if map_data.google_key %}
     if(!gnt.maps.GoogleLoaded) {
         gnt.maps.map_div = map_div;
-        gnt.maps.callback_function = callback_function;
         gnt.maps.loadGoogleMaps()
-        return;
+        return false;
     }
     {% endif %}
 
@@ -218,11 +220,7 @@ gnt.maps.create_map = function (map_div, callback_function) {
 
     map = new OpenLayers.Map(map_div, mapOptions);
     map.addLayers(gnt.maps.layers);
-    //map.zoomToMaxExtent(); // why would we do this?
-
-    if(callback_function !== undefined) {
-        callback_function(map);
-    }
+    return true;
 };
 
 gnt.maps.add_geojson_to_map = function(url, layer_name, style_map){
