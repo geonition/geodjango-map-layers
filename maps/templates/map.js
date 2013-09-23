@@ -27,6 +27,7 @@ gnt.maps.create_google = function() {
     gnt.maps.GoogleLoaded = true;
     gnt.maps.create_map(gnt.maps.map_div);
     if (gnt.after_map_loaded !== undefined){
+        gnt.map_loaded = true;
         gnt.after_map_loaded();
     }
 };
