@@ -211,9 +211,13 @@ gnt.maps.create_map = function (map_div) {
 
     //make sure mapOptions controls are set correct
     mapOptions.controls = [new OpenLayers.Control.Navigation(),
-                        new OpenLayers.Control.Attribution(),
-                           new OpenLayers.Control.PanZoom()
+                        new OpenLayers.Control.Attribution()
                            ];
+    if (gnt.questionnaire.is_mobile_user){
+        mapOptions.controls.push(new OpenLayers.Control.PanZoom({'slideRatio':0.6}));
+    } else {
+        mapOptions.controls.push(new OpenLayers.Control.Zoom());
+    }
 
 
     mapOptions['theme'] = null;
