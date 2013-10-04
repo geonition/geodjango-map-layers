@@ -213,7 +213,7 @@ gnt.maps.create_map = function (map_div) {
     mapOptions.controls = [new OpenLayers.Control.Navigation(),
                         new OpenLayers.Control.Attribution()
                            ];
-    if (gnt.questionnaire.is_mobile_user){
+    if (window.innerWidth < 770){
         mapOptions.controls.push(new OpenLayers.Control.PanZoom({'slideRatio':0.6}));
     } else {
         mapOptions.controls.push(new OpenLayers.Control.Zoom());
