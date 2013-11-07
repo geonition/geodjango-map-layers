@@ -171,7 +171,7 @@ gnt.maps.create_map = function (map_div) {
                 maxResolution: {{ map_data.max_resolution|stringformat:"f" }},
                 format: "image/png",
                 zoom: {{ map_data.zoom_level }},
-                numZoomLevels: 15,
+                numZoomLevels: 16,
                 style : "_null",
                 tileSize: new OpenLayers.Size({{ map_data.tile_size }})
             };
