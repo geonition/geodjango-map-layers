@@ -171,14 +171,14 @@ gnt.maps.create_map = function (map_div) {
                 maxResolution: {{ map_data.max_resolution|stringformat:"f" }},
                 format: "image/png",
                 zoom: {{ map_data.zoom_level }},
-                numZoomLevels: 16,
+                numZoomLevels: {{ map_data.num_zoom_levels }},
                 style : "_null",
                 tileSize: new OpenLayers.Size({{ map_data.tile_size }})
             };
         }
         {% if layer.protocol == 'WMTS' %}
-        var matrixIds = new Array(16);
-            for (var i=0; i<16; ++i) {
+        var matrixIds = new Array({{ map_data.num_zoom_levels }});
+            for (var i=0; i<{{ map_data.num_zoom_levels }}; ++i) {
                 matrixIds[i] = "EPSG:{{ map_data.projection }}:" + i;
         }
 

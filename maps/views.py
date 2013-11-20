@@ -42,6 +42,7 @@ def map_js(request, map_slug_name = ''):
     """
     map_data = Map.objects.get(slug_name = map_slug_name)
     layer_data = map_data.layers.all()
+    map_data.num_zoom_levels = getattr(settings, 'NUM_ZOOM_LEVELS', 16)
     for layer in layer_data:
         if 'Google' in layer.protocol:
             map_data.google_key = getattr(settings, 'GOOGLE_API_KEY', '')
