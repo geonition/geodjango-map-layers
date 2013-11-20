@@ -214,7 +214,12 @@ gnt.maps.create_map = function (map_div) {
                         new OpenLayers.Control.Attribution()
                            ];
     if (window.innerWidth < 770){
-        mapOptions.controls.push(new OpenLayers.Control.PanZoom({'slideRatio':0.6}));
+        if (typeof(OpenLayersWindowsPinchZoom) != 'undefined'){
+            mapOptions.controls.push(new OpenLayers.Control.Zoom());
+            mapOptions.controls.push(new OpenLayersWindowsPinchZoom());
+        } else {
+            mapOptions.controls.push(new OpenLayers.Control.PanZoom({'slideRatio':0.6}));
+        }
     } else {
         mapOptions.controls.push(new OpenLayers.Control.Zoom());
     }
