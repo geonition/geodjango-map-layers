@@ -147,7 +147,8 @@ class Source(models.Model):
         # spaces are not allowed in a URLField
 #        parser = ET.XMLParser(ns_clean=True)
         urls = [u.strip() for u in url.split(',')]
-        resp = urllib2.urlopen(urls[0] + '?service=WMS&version=1.1.0&request=GetCapabilities')
+        #resp = urllib2.urlopen(urls[0] + '?service=WMS&version=1.1.0&request=GetCapabilities')
+        resp = urllib2.urlopen(urls[0] + '?REQUEST=GetCapabilities')
         
         info = ET.parse(resp).getroot()
         urls = ['\"'+u+'\"' for u in urls]
