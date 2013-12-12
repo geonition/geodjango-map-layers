@@ -199,6 +199,7 @@ gnt.maps.create_map = function (map_div) {
         layer = new OpenLayers.Layer.WMS( "OpenLayers WMS",
                     urlArray,
                     {layers: "{{ layer.name }}",
+                     format: "image/png",
                     {% if layer.layer_type == 'OL' %}
                        transparent: true,
                     {% endif %}
